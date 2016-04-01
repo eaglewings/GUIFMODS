@@ -8,6 +8,11 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="350" Width="525">
     <Grid>
-        
+        <Controls:SpiderChart Title="Spider chart"  
+                               Lines="{Binding Lines}" 
+                               Axis="{Binding Axes}" 
+                               Minimum="0" 
+                               Maximum="1" 
+                               Ticks="5" />
     </Grid>
 </Window>

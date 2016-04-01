@@ -49,11 +49,10 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Axis.cs" />
     <Compile Include="ChartLine.cs" />
     <Compile Include="Converters\ConvertBoolToVisibility.cs" />
     <Compile Include="Converters\ConvertColorToBrush.cs" />
-    <Compile Include="Converters\ConvertLegendLocationToAlignment.cs" />
-    <Compile Include="LegendLocation.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>

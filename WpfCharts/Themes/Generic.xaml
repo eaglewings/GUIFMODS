@@ -27,44 +27,16 @@
                                         <local:SpiderChartPanel Minimum="{Binding Minimum, RelativeSource={RelativeSource AncestorType={x:Type local:SpiderChart}}}"
                                                                 Maximum="{Binding Maximum, RelativeSource={RelativeSource AncestorType={x:Type local:SpiderChart}}}"
                                                                 Ticks="{Binding Ticks, RelativeSource={RelativeSource AncestorType={x:Type local:SpiderChart}}}" 
-                                                                Lines="{Binding Lines, RelativeSource={RelativeSource AncestorType={x:Type local:SpiderChart}}}"/>
+                                                                Lines="{Binding Lines, RelativeSource={RelativeSource AncestorType={x:Type local:SpiderChart}}}"
+                                                                Axes="{Binding Axis, RelativeSource={RelativeSource AncestorType={x:Type local:SpiderChart}}}"/>
                                     </ItemsPanelTemplate>
                                 </ItemsControl.ItemsPanel>
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
-                                        <TextBlock Text="{Binding}" Background="{Binding ElementName=border, Path=Background}" FontSize="14" FontWeight="Bold" />
+                                        <TextBlock Text="{Binding Title}" Background="{Binding ElementName=border, Path=Background}" FontSize="14" FontWeight="Bold" />
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>
-                            <Border x:Name="PART_LEGEND"
-                                    Grid.Row="1"
-                                    VerticalAlignment="{TemplateBinding LegendLocation, Converter={Converters:ConvertLegendLocationToAlignment}, ConverterParameter='V'}" 
-                                    HorizontalAlignment="{TemplateBinding LegendLocation, Converter={Converters:ConvertLegendLocationToAlignment}, ConverterParameter='H'}" 
-                                    CornerRadius="10" 
-                                    BorderBrush="Black"
-                                    BorderThickness="2"
-                                    Visibility="{TemplateBinding ShowLegend, Converter={Converters:ConvertBoolToVisibility}}"
-                                    Background="{TemplateBinding LegendBackgroundColor, Converter={Converters:ConvertColorToBrush}}"
-                                    Margin="10">
-                                <ItemsControl ItemsSource="{TemplateBinding Lines}">
-                                    <ItemsControl.ItemTemplate>
-                                        <DataTemplate>
-                                            <StackPanel Orientation="Horizontal">
-                                                <Rectangle Height="20" 
-                                                           Width="20" 
-                                                           Margin="5"
-                                                           StrokeThickness="{Binding LineThickness}"
-                                                           Fill="{Binding FillColor, Converter={Converters:ConvertColorToBrush}}" 
-                                                           Stroke="{Binding LineColor, Converter={Converters:ConvertColorToBrush}}" />
-                                                <TextBlock Text="{Binding Name}" 
-                                                           FontFamily="Segoe UI"
-                                                           FontSize="14"
-                                                           Margin="5 5 10 5"/>
-                                            </StackPanel>
-                                        </DataTemplate>
-                                    </ItemsControl.ItemTemplate>
-                                </ItemsControl>
-                            </Border>
                         </Grid>
                     </Border>
                 </ControlTemplate>

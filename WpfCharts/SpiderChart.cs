@@ -33,7 +33,7 @@ namespace Controls
     ///  Step 2)
     ///  Go ahead and use your control in the XAML file.
     ///
-    ///  <MyNamespace:SpiderChart />
+    ///  <MyNamespace:Controls />
     ///</summary>
     public class SpiderChart : Control
     {
@@ -240,120 +240,6 @@ namespace Controls
         /// Provides derived classes an opportunity to handle changes to the Ticks property.
         /// </summary>
         protected virtual void OnTicksChanged(int oldTicks, int newTicks)
-        {
-        }
-
-        #endregion
-
-        #region ShowLegend
-
-        /// <summary>
-        /// ShowLegend Dependency Property
-        /// </summary>
-        public static readonly DependencyProperty ShowLegendProperty =
-            DependencyProperty.Register("ShowLegend", typeof(bool), typeof(SpiderChart),
-                new FrameworkPropertyMetadata(false, OnShowLegendChanged));
-
-        /// <summary>
-        /// Gets or sets the ShowLegend property.
-        /// </summary>
-        public bool ShowLegend
-        {
-            get { return (bool)GetValue(ShowLegendProperty); }
-            set { SetValue(ShowLegendProperty, value); }
-        }
-
-        /// <summary>
-        /// Handles changes to the ShowLegend property.
-        /// </summary>
-        private static void OnShowLegendChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            var target = (SpiderChart)d;
-            var oldShowLegend = (bool)e.OldValue;
-            var newShowLegend = target.ShowLegend;
-            target.OnShowLegendChanged(oldShowLegend, newShowLegend);
-        }
-
-        /// <summary>
-        /// Provides derived classes an opportunity to handle changes to the ShowLegend property.
-        /// </summary>
-        protected virtual void OnShowLegendChanged(bool oldShowLegend, bool newShowLegend)
-        {
-        }
-
-        #endregion
-
-        #region LegendBackgroundColor
-
-        /// <summary>
-        /// LegendBackgroundColor Dependency Property
-        /// </summary>
-        public static readonly DependencyProperty LegendBackgroundColorProperty =
-            DependencyProperty.Register("LegendBackgroundColor", typeof(Color), typeof(SpiderChart),
-                new FrameworkPropertyMetadata((Color)Colors.Wheat, OnLegendBackgroundColorChanged));
-
-        /// <summary>
-        /// Gets or sets the LegendBackgroundColor property. \
-        /// </summary>
-        public Color LegendBackgroundColor
-        {
-            get { return (Color)GetValue(LegendBackgroundColorProperty); }
-            set { SetValue(LegendBackgroundColorProperty, value); }
-        }
-
-        /// <summary>
-        /// Handles changes to the LegendBackgroundColor property.
-        /// </summary>
-        private static void OnLegendBackgroundColorChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            var target = (SpiderChart)d;
-            var oldLegendBackgroundColor = (Color)e.OldValue;
-            var newLegendBackgroundColor = target.LegendBackgroundColor;
-            target.OnLegendBackgroundColorChanged(oldLegendBackgroundColor, newLegendBackgroundColor);
-        }
-
-        /// <summary>
-        /// Provides derived classes an opportunity to handle changes to the LegendBackgroundColor property.
-        /// </summary>
-        protected virtual void OnLegendBackgroundColorChanged(Color oldLegendBackgroundColor, Color newLegendBackgroundColor)
-        {
-        }
-
-        #endregion
-
-        #region LegendLocation
-
-        /// <summary>
-        /// LegendLocation Dependency Property
-        /// </summary>
-        public static readonly DependencyProperty LegendLocationProperty =
-            DependencyProperty.Register("LegendLocation", typeof(LegendLocation), typeof(SpiderChart),
-                new FrameworkPropertyMetadata(LegendLocation.BottomRight, OnLegendLocationChanged));
-
-        /// <summary>
-        /// Gets or sets the LegendLocation property. 
-        /// </summary>
-        public LegendLocation LegendLocation
-        {
-            get { return (LegendLocation)GetValue(LegendLocationProperty); }
-            set { SetValue(LegendLocationProperty, value); }
-        }
-
-        /// <summary>
-        /// Handles changes to the LegendLocation property.
-        /// </summary>
-        private static void OnLegendLocationChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            var target = (SpiderChart)d;
-            var oldLegendLocation = (LegendLocation)e.OldValue;
-            var newLegendLocation = target.LegendLocation;
-            target.OnLegendLocationChanged(oldLegendLocation, newLegendLocation);
-        }
-
-        /// <summary>
-        /// Provides derived classes an opportunity to handle changes to the LegendLocation property.
-        /// </summary>
-        protected virtual void OnLegendLocationChanged(LegendLocation oldLegendLocation, LegendLocation newLegendLocation)
         {
         }
 

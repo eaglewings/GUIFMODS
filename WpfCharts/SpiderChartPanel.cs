@@ -191,6 +191,59 @@ namespace Controls
         }
 
         #endregion
+        
+        #region Axes
+
+        /// <summary>
+        /// Lines Dependency Property (acts as a kind of ItemsSource, triggering a redraw when the collection is changed)
+        /// </summary>
+        public static readonly DependencyProperty AxesProperty =
+            DependencyProperty.Register("Axes", typeof(List<Axis>), typeof(SpiderChartPanel), new FrameworkPropertyMetadata(null, OnAxesChanged));
+
+        /// <summary>
+        /// Gets or sets the Lines property.
+        /// </summary>
+        public List<Axis> Axes
+        {
+            get { return (List<Axis>)GetValue(AxesProperty); }
+            set { SetValue(AxesProperty, value); }
+        }
+
+        /// <summary>
+        /// Handles changes to the Lines property.
+        /// </summary>
+        private static void OnAxesChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var target = (SpiderChartPanel)d;
+            var oldAxes = (List<Axis>)e.OldValue;
+            var newAxes = target.Axes;
+
+            // Remove handler
+            var oldValueINotifyCollectionChanged = (e.OldValue as List<Axis>) as INotifyCollectionChanged;
+            if (oldValueINotifyCollectionChanged != null)
+                oldValueINotifyCollectionChanged.CollectionChanged -= target.AxesCollectionChanged;
+
+            // Add handler in case the Lines collection implements INotifyCollectionChanged
+            var newValueINotifyCollectionChanged = (e.NewValue as List<Axis>) as INotifyCollectionChanged;
+            if (newValueINotifyCollectionChanged != null)
+                newValueINotifyCollectionChanged.CollectionChanged += target.AxesCollectionChanged;
+
+            target.OnAxesChanged(oldAxes, newAxes);
+        }
+
+        private void AxesCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            InvalidateVisual();
+        }
+
+        /// <summary>
+        /// Provides derived classes an opportunity to handle changes to the Lines property.
+        /// </summary>
+        protected virtual void OnAxesChanged(List<Axis> oldAxes, List<Axis> newAxes)
+        {
+        }
+
+#endregion
 
         protected override void OnRender(DrawingContext dc)
         {
@@ -220,13 +273,19 @@ namespace Controls
                     var p2 = GetPoint(center, curRadius, angle);
                     dc.DrawLine(DashedPen, p1, p2);
                     p1 = p2;
+                    // Draw the labels
+                    
+                    if (i == 0)
+                    {
+                        p1 = new Point(p1.X + 5, p1.Y - 15);
+                        dc.DrawText(new FormattedText(Axes[j].Min.ToString(CultureInfo.InvariantCulture), CultureInfo.GetCultureInfo("en-us"), FlowDirection.LeftToRight, LabelFont, 14, Brushes.Black), p1);
+                    }
+                    else if (i == Ticks - 1)
+                    {
+                        p1 = new Point(p1.X + 5, p1.Y - 15);
+                        dc.DrawText(new FormattedText(Axes[j].Max.ToString(CultureInfo.InvariantCulture), CultureInfo.GetCultureInfo("en-us"), FlowDirection.LeftToRight, LabelFont, 14, Brushes.Black), p1);
+                    }
                 }
-                // Draw the labels
-                p1 = new Point(p1.X + 5, p1.Y - 15);
-                if (i == 0)
-                    dc.DrawText(new FormattedText(Minimum.ToString(CultureInfo.InvariantCulture), CultureInfo.GetCultureInfo("en-us"), FlowDirection.LeftToRight, LabelFont, 14, Brushes.Black), p1);
-                else if (i == Ticks - 1)
-                    dc.DrawText(new FormattedText(Maximum.ToString(CultureInfo.InvariantCulture), CultureInfo.GetCultureInfo("en-us"), FlowDirection.LeftToRight, LabelFont, 14, Brushes.Black), p1);
             }
 
             // Draw the spokes

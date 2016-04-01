@@ -23,6 +23,7 @@ namespace ChartTest
         public MainWindow()
         {
             InitializeComponent();
+            DataContext = new MainWindowViewModel();
         }
     }
 }
