@@ -33,7 +33,8 @@
                                 </ItemsControl.ItemsPanel>
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
-                                        <TextBlock Text="{Binding Title}" Background="{Binding ElementName=border, Path=Background}" FontSize="14" FontWeight="Bold" />
+                                        <!--<TextBlock Text="{Binding Title}" Background="{Binding ElementName=border, Path=Background}" FontSize="14" FontWeight="Bold" />-->
+                                        <Line Stroke="Black" X2="100" Y2="100" />
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>

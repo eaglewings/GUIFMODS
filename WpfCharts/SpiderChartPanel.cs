@@ -277,17 +277,17 @@ namespace Controls
                     
                     if (i == 0)
                     {
-                        p1 = new Point(p1.X + 5, p1.Y - 15);
-                        dc.DrawText(new FormattedText(Axes[j].Min.ToString(CultureInfo.InvariantCulture), CultureInfo.GetCultureInfo("en-us"), FlowDirection.LeftToRight, LabelFont, 14, Brushes.Black), p1);
+                        var p3 = new Point(p1.X + 5, p1.Y - 15);
+                        dc.DrawText(new FormattedText(Axes[j].Min.ToString(CultureInfo.InvariantCulture), CultureInfo.GetCultureInfo("en-us"), FlowDirection.LeftToRight, LabelFont, 14, Brushes.Black), p3);
                     }
                     else if (i == Ticks - 1)
                     {
-                        p1 = new Point(p1.X + 5, p1.Y - 15);
-                        dc.DrawText(new FormattedText(Axes[j].Max.ToString(CultureInfo.InvariantCulture), CultureInfo.GetCultureInfo("en-us"), FlowDirection.LeftToRight, LabelFont, 14, Brushes.Black), p1);
+                        var p3 = new Point(p1.X + 5, p1.Y - 15);
+                        dc.DrawText(new FormattedText(Axes[j].Max.ToString(CultureInfo.InvariantCulture), CultureInfo.GetCultureInfo("en-us"), FlowDirection.LeftToRight, LabelFont, 14, Brushes.Black), p3);
                     }
                 }
             }
-
+            /*
             // Draw the spokes
             for (var i = 0; i < steps; i++)
             {
@@ -295,7 +295,7 @@ namespace Controls
                 var p1 = GetPoint(center, spokeLength, angle);
                 dc.DrawLine(Pen, center, p1);
             }
-
+            */
             // Draw the chart lines
             if (Lines == null) return;
             var scale = Maximum - Minimum;

@@ -68,6 +68,7 @@
     </Compile>
     <Compile Include="SpiderChart.cs" />
     <Compile Include="SpiderChartPanel.cs" />
+    <Compile Include="SpokePanel.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
