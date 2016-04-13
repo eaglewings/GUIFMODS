@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Knapsack.Models
 {
@@ -16,8 +13,9 @@ namespace Knapsack.Models
     public class Problem
     {
 
-        readonly List<Item> items;
+        private readonly List<Item> items;
         private double[] capacities;
+        private int numberOfProfits;
 
         public Problem()
         {
@@ -28,6 +26,7 @@ namespace Knapsack.Models
         {
             this.items = CreateItems(itemConfig);
             capacities = new double[itemConfig.Characteristics];
+            numberOfProfits = itemConfig.Profits;
         }
 
         private List<Item> CreateItems(ItemConfig itemConfig)
@@ -37,7 +36,7 @@ namespace Knapsack.Models
 
             for (int i = 0; i < itemConfig.Items; i++)
             {
-                items.Add(new Item(itemConfig.Characteristics, itemConfig.Profits, random));
+                items.Add(new Item(itemConfig.Profits, itemConfig.Characteristics, random));
             }
             return items;
         }
@@ -49,12 +48,21 @@ namespace Knapsack.Models
             }
         }
 
-        public double[] Capacities {
+        public double[] Capacities
+        {
             get
             {
                 return capacities;
             }
+        }
+
+        public int NumberOfProfits
+        {
+            get
+            {
+                return numberOfProfits;
             }
+        }
 
     }
 
