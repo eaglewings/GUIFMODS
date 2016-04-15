@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 
 namespace Controls
 {
@@ -81,6 +82,8 @@ namespace Controls
 
                 //Call Arrange method on the child element by giving the calculated point as the placementPoint.
                 elem.Arrange(new Rect(actualChildPoint.X, actualChildPoint.Y, elem.DesiredSize.Width, elem.DesiredSize.Height));
+                
+                elem.RenderTransform = new RotateTransform(angle, childPoint.X, childPoint.Y);
 
                 //Calculate the new _angle for the next element
                 angle += incrementalAngularSpace;

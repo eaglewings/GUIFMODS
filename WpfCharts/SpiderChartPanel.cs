@@ -15,13 +15,7 @@ namespace Controls
     {
         private static readonly Pen DashedPen = new Pen(Brushes.Black, 1)
         {
-            DashStyle = new DashStyle
-            {
-                Dashes = new DoubleCollection {
-                                                                                                                                              2,
-                                                                                                                                              8
-                                                                                                                                          }
-            }
+            DashStyle = new DashStyle { Dashes = new DoubleCollection { 2, 8 } }
         };
 
         private static readonly Pen Pen = new Pen(Brushes.Black, 4) { EndLineCap = PenLineCap.Round };
@@ -287,7 +281,7 @@ namespace Controls
                     }
                 }
             }
-            /*
+
             // Draw the spokes
             for (var i = 0; i < steps; i++)
             {
@@ -295,15 +289,16 @@ namespace Controls
                 var p1 = GetPoint(center, spokeLength, angle);
                 dc.DrawLine(Pen, center, p1);
             }
-            */
+
             // Draw the chart lines
             if (Lines == null) return;
-            var scale = Maximum - Minimum;
-            if (scale <= 0) return;
+            
             foreach (var line in Lines)
             {
                 var angle = 0D;
-                var curRadius = minRadius + (line.PointDataSource[0] - Minimum) * deltaRadius / scale;
+                var scale = Axes[0].Max - Axes[0].Min;
+                if (scale <= 0) return;
+                var curRadius = minRadius + (line.PointDataSource[0] - Axes[0].Min) * deltaRadius / scale;
                 var p1 = GetPoint(center, curRadius, angle);
                 var myPathFigure = new PathFigure
                 {
@@ -313,8 +308,10 @@ namespace Controls
                 var pts = new PointCollection(steps) { p1 };
                 for (var j = 1; j < steps; j++)
                 {
+                    scale = Axes[j].Max - Axes[j].Min;
+                    if (scale <= 0) return;
                     angle = (j) * deltaAngle;
-                    curRadius = minRadius + (line.PointDataSource[j] - Minimum) * deltaRadius / scale;
+                    curRadius = minRadius + (line.PointDataSource[j] - Axes[j].Min) * deltaRadius / scale;
                     var p2 = GetPoint(center, curRadius, angle);
                     myPathFigure.Segments.Add(new LineSegment { Point = p2 });
                     pts.Add(p2);

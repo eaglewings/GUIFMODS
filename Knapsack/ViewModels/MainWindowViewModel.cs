@@ -179,7 +179,6 @@ namespace Knapsack.ViewModels
                 stream.Close();
                 Problem = (Problem)loadedModel;
             }
-
         }
 
         private RelayCommand loadCmd;

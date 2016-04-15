@@ -15,6 +15,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Models", "Models\Models.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JMetalCSharp", "JMetalCSharp\JMetalCSharp.csproj", "{88B27C90-4C97-43D5-99D2-E1437DA8D154}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MainApp", "Application\MainApp.csproj", "{93FFFB5E-7D76-4EC3-BB5D-BD2985D9FAFE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,6 +47,10 @@ Global
 		{88B27C90-4C97-43D5-99D2-E1437DA8D154}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{88B27C90-4C97-43D5-99D2-E1437DA8D154}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{88B27C90-4C97-43D5-99D2-E1437DA8D154}.Release|Any CPU.Build.0 = Release|Any CPU
+		{93FFFB5E-7D76-4EC3-BB5D-BD2985D9FAFE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{93FFFB5E-7D76-4EC3-BB5D-BD2985D9FAFE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{93FFFB5E-7D76-4EC3-BB5D-BD2985D9FAFE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{93FFFB5E-7D76-4EC3-BB5D-BD2985D9FAFE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
