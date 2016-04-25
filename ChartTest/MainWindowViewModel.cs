@@ -22,14 +22,14 @@ namespace ChartTest
                                                                               LineColor = Colors.Red,
                                                                               FillColor = Color.FromArgb(128, 255, 0, 0),
                                                                               LineThickness = 2,
-                                                                              PointDataSource = GenerateRandomDataSet(Axes.Count),
+                                                                              PointDataSource = GenerateRandomDataSet(),
                                                                               Name = "Chart 1"
                                                                           },
                                                             new ChartLine {
                                                                               LineColor = Colors.Blue,
                                                                               FillColor = Color.FromArgb(128, 0, 0, 255),
                                                                               LineThickness = 2,
-                                                                              PointDataSource = GenerateRandomDataSet(Axes.Count),
+                                                                              PointDataSource = GenerateRandomDataSet(),
                                                                               Name = "Chart 2"
                                                                           }
                                                         };
@@ -52,13 +52,13 @@ namespace ChartTest
 
         public List<Axis> Axes { get; set; }
 
-        public List<double> GenerateRandomDataSet(int nmbrOfPoints)
+        public List<double> GenerateRandomDataSet()
         {
-            var pts = new List<double>(nmbrOfPoints);
-            for (var i = 0; i < nmbrOfPoints; i++)
+            var pts = new List<double>();
+            foreach (Axis axis in Axes)
             {
-                pts.Add(random.NextDouble());
-            }
+                pts.Add(random.NextDouble() * (axis.Max - axis.Min) + axis.Min);
+            }            
             return pts;
         }
 

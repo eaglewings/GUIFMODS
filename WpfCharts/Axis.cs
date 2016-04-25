@@ -10,9 +10,17 @@ namespace Controls
             Max = 1;
         }
 
-        private int max;
+        public Axis(double min, double max)
+        {
+            Min = min;
+            BoundaryMin = min;
+            Max = max;
+            BoundaryMax = max;
+        }
 
-        public int Max
+        private double max;
+
+        public double Max
         {
             get
             {
@@ -22,6 +30,14 @@ namespace Controls
             {
                 if (max != value && value > Min)
                 {
+                    if (BoundaryMax > value)
+                    {
+                        BoundaryMax = value;
+                    }
+                    if (BoundaryMin > value)
+                    {
+                        BoundaryMin = value;
+                    }
                     max = value;
                     OnPropertyChanged("Max");
                 }
@@ -29,9 +45,9 @@ namespace Controls
 
         }
 
-        private int min;
+        private double min;
 
-        public int Min
+        public double Min
         {
             get
             {
@@ -41,6 +57,14 @@ namespace Controls
             {
                 if (min != value && value < Max)
                 {
+                    if(BoundaryMax < value)
+                    {
+                        BoundaryMax = value;
+                    }
+                    if(BoundaryMin < value)
+                    {
+                        BoundaryMin = value;
+                    }
                     min = value;
                     OnPropertyChanged("Min");
                 }
@@ -58,6 +82,36 @@ namespace Controls
                 {
                     title = value;
                     OnPropertyChanged("Title");
+                }
+            }
+        }
+
+        private double boundaryMin;
+
+        public double BoundaryMin
+        {
+            get { return boundaryMin; }
+            set
+            {
+                if (boundaryMin != value)
+                {
+                    boundaryMin = value;
+                    OnPropertyChanged("BoundaryMin");
+                }
+            }
+        }
+
+        private double boundaryMax;
+
+        public double BoundaryMax
+        {
+            get { return boundaryMax; }
+            set
+            {
+                if (boundaryMax != value)
+                {
+                    boundaryMax = value;
+                    OnPropertyChanged("BoundaryMax");
                 }
             }
         }

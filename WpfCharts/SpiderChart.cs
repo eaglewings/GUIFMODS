@@ -47,15 +47,15 @@ namespace Controls
         /// <summary>
         ///   Axis Dependency Property
         /// </summary>
-        public static readonly DependencyProperty AxisProperty = DependencyProperty.Register("Axis", typeof (IEnumerable), typeof (SpiderChart), new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.AffectsRender, OnAxisChanged));
+        public static readonly DependencyProperty AxisProperty = DependencyProperty.Register("Axis", typeof (IEnumerable<Axis>), typeof (SpiderChart), new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.AffectsRender, OnAxisChanged));
 
         /// <summary>
         ///   Gets or sets the Axis property. This dependency property 
         ///   indicates ....
         /// </summary>
-        public IEnumerable Axis
+        public IEnumerable<Axis> Axis
         {
-            get { return (IEnumerable) GetValue(AxisProperty); }
+            get { return (IEnumerable<Axis>) GetValue(AxisProperty); }
             set { SetValue(AxisProperty, value); }
         }
 

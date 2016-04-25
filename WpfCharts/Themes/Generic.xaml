@@ -2,7 +2,10 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="clr-namespace:Controls"
+    xmlns:avalon="clr-namespace:AC.AvalonControlsLibrary.Controls;assembly=AvalonControlsLibrary"
     xmlns:Converters="clr-namespace:Controls.Converters">
+    <Converters:PointConverter x:Key="PointConverter" />
+
     <Style TargetType="{x:Type local:SpiderChart}">
         <Setter Property="Background" Value="White" />
         <Setter Property="Template">
@@ -37,11 +40,125 @@
                                         <!--<Line Stroke="Black" X2="100" Y2="100" />-->
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
+                                
+                            </ItemsControl>
+                            <ItemsControl x:Name="PART_LINEPANEL" Grid.Row="1" ItemsSource="{TemplateBinding Lines}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <Canvas IsItemsHost="True"></Canvas>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Polygon Points="{Binding Converter={StaticResource PointConverter}}"></Polygon>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
                             </ItemsControl>
                         </Grid>
                     </Border>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+    </Style>
+
+    <SolidColorBrush x:Key="Thumb.Static.Background" Color="#FF000000"/>
+    <ControlTemplate x:Key="SliderThumb" TargetType="{x:Type Thumb}">
+        <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
+            <Ellipse Height="10" Width="10" Fill="{StaticResource Thumb.Static.Background}" VerticalAlignment="Center"/>
+        </Grid>
+    </ControlTemplate>
+    <ControlTemplate x:Key="InvisibleMiddleThumb" TargetType="{x:Type Thumb}">
+        <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
+
+        </Grid>
+    </ControlTemplate>
+    <Style x:Key="RepeatButtonTransparent" TargetType="{x:Type RepeatButton}">
+        <Setter Property="OverridesDefaultStyle" Value="true"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Focusable" Value="false"/>
+        <Setter Property="IsTabStop" Value="false"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type RepeatButton}">
+                    <Rectangle Fill="{TemplateBinding Background}" Height="{TemplateBinding Height}" Width="{TemplateBinding Width}"/>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    
+    <ControlTemplate TargetType="{x:Type avalon:RangeSlider}" x:Key="rangeSliderTemplate">
+        <Grid>
+            <Border Background="{StaticResource Thumb.Static.Background}" Height="2"></Border>
+            <StackPanel Name="PART_RangeSliderContainer" HorizontalAlignment="Stretch">
+                <RepeatButton Name="PART_LeftEdge" Style="{StaticResource RepeatButtonTransparent}"/>
+                <Thumb Name="PART_LeftThumb" Cursor="SizeWE" Template="{StaticResource SliderThumb}" ToolTip="{TemplateBinding RangeStartSelected}"/>
+                <!--This size of this thumb will auto matically change by the control to 10-->
+                <Thumb Name="PART_MiddleThumb" Background="AntiqueWhite" Cursor="ScrollAll" MinWidth="10" Template="{StaticResource InvisibleMiddleThumb}"/>
+                <Thumb Name="PART_RightThumb" Cursor="SizeWE" Template="{StaticResource SliderThumb}" ToolTip="{TemplateBinding RangeStopSelected}"/>
+                <!--This size of this thumb will auto matically change by the control to 10-->
+                <RepeatButton Name="PART_RightEdge" Style="{StaticResource RepeatButtonTransparent}"/>
+            </StackPanel>
+        </Grid>
+    </ControlTemplate>
+    
+    <Style TargetType="{x:Type local:RadarChart}">
+        <Setter Property="Background" Value="White" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type local:RadarChart}">
+                    <Border x:Name="border"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}">
+                        <Grid>
+
+                            <ItemsControl x:Name="PART_SpokePanel" 
+                                          ItemsSource="{TemplateBinding Axes}" >
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <local:SpokePanel/>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate DataType="{x:Type local:Axis}">
+                                        <!--<TextBlock Text="{Binding Title}" Background="{Binding ElementName=border, Path=Background}" FontSize="14" FontWeight="Bold" />-->
+                                        <!--<Line Stroke="Black" X2="100" Y2="100" />-->
+                                        <Grid>
+                                            <avalon:RangeSlider x:Name="rangeSlider" Template="{StaticResource rangeSliderTemplate}"
+                                                                RangeStartSelected="{Binding BoundaryMin}" RangeStopSelected="{Binding BoundaryMax}"
+                                                                RangeStart="{Binding Min}" RangeStop="{Binding Max}"
+                                                                />
+                                        </Grid>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+
+                            </ItemsControl>
+                            <ItemsControl x:Name="PART_LINEPANEL" Grid.Row="1" ItemsSource="{TemplateBinding Lines}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <Grid IsItemsHost="True"></Grid>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate DataType="{x:Type local:ChartLine}">
+                                        <local:ChartLineControl Data="{Binding PointDataSource}"/>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </Grid>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    
+    
+    <Style TargetType="{x:Type local:ChartLineControl}">
+        <Setter Property="Stroke" Value="Black"/>
+        <Setter Property="StrokeThickness" Value="1"/>
+        <Setter
+            Property="ParentRadarChart"
+            Value="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:RadarChart}}, Path=.}"
+            />
     </Style>
 </ResourceDictionary>
