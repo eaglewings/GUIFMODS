@@ -71,6 +71,10 @@ namespace Controls
                 if (ParentRadarChart == null) {
                     return g;
                 }
+                if (Data == null)
+                {
+                    return g;
+                }
                 List<Point> points = Points;
                 PathFigure f = new PathFigure();
                 f.StartPoint = points[0];
@@ -88,7 +92,7 @@ namespace Controls
         {
             get
             {
-                var minSide = Math.Min(ParentRadarChart.ActualWidth, ParentRadarChart.ActualHeight);
+                var minSide = Math.Min(RenderSize.Width, RenderSize.Height);
                 Point center = new Point(minSide / 2, minSide / 2);
                 double angleIncrementRad = 2 * Math.PI / ParentRadarChart.Axes.Count;
 
@@ -111,7 +115,7 @@ namespace Controls
                     double pointlength = (axisValue - axis.Min) / (axis.Max - axis.Min) * axisLength;
                     Point p = new Point();
                     p.X = center.X + Math.Cos(angleRad) * pointlength;
-                    p.Y = center.Y + Math.Sin(angleRad) * pointlength;
+                    p.Y = center.Y - Math.Sin(angleRad) * pointlength;
                     points.Add(p);
                     angleRad -= angleIncrementRad;
                 }

@@ -20,14 +20,23 @@
                 <RowDefinition></RowDefinition>
                 <RowDefinition></RowDefinition>
             </Grid.RowDefinitions>
-            <Controls:SpiderChart Grid.Row="0"
-                              Title="Spider chart"  
+            <Controls:RadarChart Grid.Row="0"
                                Lines="{Binding Lines}" 
-                               Axis="{Binding Axes}" 
-                               Minimum="0" 
-                               Maximum="1" 
-                               Ticks="5" />
-            <DataGrid Grid.Row="1" ItemsSource="{Binding Solutions}"></DataGrid>
+                               Axes="{Binding Axes}"
+                                 SelectedLine ="{Binding SelectedLine}"/>
+            <DataGrid Grid.Row="1" 
+                      ItemsSource="{Binding Solutions}"
+                      SelectedItem="{Binding Path=SelectedSolution, Mode=TwoWay}">
+                <!--
+                <DataGridTemplateColumn>
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <CheckBox x:Name="TestCheckBox"
+                              PreviewMouseLeftButtonDown="CheckBox_PreviewMouseLeftButtonDown" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>-->
+            </DataGrid>
         </Grid>
         <Grid Grid.Column="1">
             <Grid.RowDefinitions>
@@ -42,14 +51,19 @@
                 <Grid.RowDefinitions>
                     <RowDefinition></RowDefinition>
                     <RowDefinition></RowDefinition>
+                    <RowDefinition/>
                 </Grid.RowDefinitions>
                 <Button Grid.Column="1" x:Name="btLoad" Content="Load" Width="75" Command="{Binding LoadCmd}" HorizontalAlignment="Right" Margin="10"/>
                 <Button Grid.Column="1" Grid.Row="1" x:Name="btSolve" Content="Solve" Width="75" Command="{Binding SolveCmd}" HorizontalAlignment="Right" Margin="10"/>
+                <ComboBox Grid.Column="1" Grid.Row="2"
+                          x:Name="cmbUserConstraints" 
+                          ItemsSource="{Binding ConstraintHandlingMethods}"
+                          SelectedItem="{Binding SelectedConstraintHandlingMethod}" Grid.ColumnSpan="2" Margin="10"/>
             </Grid>
 
             <DataGrid Grid.Row="1" ItemsSource="{Binding Items}"></DataGrid>
 
-            
+
         </Grid>
     </Grid>
 </Window>

@@ -3,8 +3,8 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="clr-namespace:Controls"
     xmlns:avalon="clr-namespace:AC.AvalonControlsLibrary.Controls;assembly=AvalonControlsLibrary"
+    xmlns:adorner="clr-namespace:AdornedControl;assembly=AdornedControl"
     xmlns:Converters="clr-namespace:Controls.Converters">
-    <Converters:PointConverter x:Key="PointConverter" />
 
     <Style TargetType="{x:Type local:SpiderChart}">
         <Setter Property="Background" Value="White" />
@@ -88,6 +88,9 @@
     
     <ControlTemplate TargetType="{x:Type avalon:RangeSlider}" x:Key="rangeSliderTemplate">
         <Grid>
+            <Canvas>
+                <Label Content="{TemplateBinding RangeStartSelected}" Canvas.Left="{Binding ElementName=PART_LeftEdge, Path=Width}"></Label>
+            </Canvas>
             <Border Background="{StaticResource Thumb.Static.Background}" Height="2"></Border>
             <StackPanel Name="PART_RangeSliderContainer" HorizontalAlignment="Stretch">
                 <RepeatButton Name="PART_LeftEdge" Style="{StaticResource RepeatButtonTransparent}"/>
@@ -98,6 +101,7 @@
                 <!--This size of this thumb will auto matically change by the control to 10-->
                 <RepeatButton Name="PART_RightEdge" Style="{StaticResource RepeatButtonTransparent}"/>
             </StackPanel>
+            
         </Grid>
     </ControlTemplate>
     
@@ -124,8 +128,8 @@
                                         <!--<TextBlock Text="{Binding Title}" Background="{Binding ElementName=border, Path=Background}" FontSize="14" FontWeight="Bold" />-->
                                         <!--<Line Stroke="Black" X2="100" Y2="100" />-->
                                         <Grid>
-                                            <avalon:RangeSlider x:Name="rangeSlider" Template="{StaticResource rangeSliderTemplate}"
-                                                                RangeStartSelected="{Binding BoundaryMin}" RangeStopSelected="{Binding BoundaryMax}"
+                                            <avalon:RangeSlider x:Name="rangeSlider" Template="{StaticResource rangeSliderTemplate}" 
+                                                                RangeStartSelected="{Binding Path=BoundaryMin, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" RangeStopSelected="{Binding Path=BoundaryMax, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                                                 RangeStart="{Binding Min}" RangeStop="{Binding Max}"
                                                                 />
                                         </Grid>
@@ -141,10 +145,20 @@
                                 </ItemsControl.ItemsPanel>
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate DataType="{x:Type local:ChartLine}">
-                                        <local:ChartLineControl Data="{Binding PointDataSource}"/>
+                                        <local:ChartLineControl Data="{Binding PointDataSource}">
+                                            <local:ChartLineControl.Stroke>
+                                                <SolidColorBrush Color="Black" Opacity="0.2"/>
+                                            </local:ChartLineControl.Stroke>
+                                        </local:ChartLineControl>
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>
+                            <Grid>
+                                <local:ChartLineControl 
+                                    Data="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=SelectedLine.PointDataSource}"
+                                    Stroke="Red"
+                                    StrokeThickness="2"/>
+                            </Grid>
                         </Grid>
                     </Border>
                 </ControlTemplate>

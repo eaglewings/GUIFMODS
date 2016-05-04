@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JMetalCSharp", "JMetalCShar
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MainApp", "Application\MainApp.csproj", "{93FFFB5E-7D76-4EC3-BB5D-BD2985D9FAFE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdornedControl", "AdornedControl\AdornedControl.csproj", "{94B81CB7-F8A6-44BC-BD71-E927F701E0D8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,6 +53,10 @@ Global
 		{93FFFB5E-7D76-4EC3-BB5D-BD2985D9FAFE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{93FFFB5E-7D76-4EC3-BB5D-BD2985D9FAFE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{93FFFB5E-7D76-4EC3-BB5D-BD2985D9FAFE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{94B81CB7-F8A6-44BC-BD71-E927F701E0D8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{94B81CB7-F8A6-44BC-BD71-E927F701E0D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{94B81CB7-F8A6-44BC-BD71-E927F701E0D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{94B81CB7-F8A6-44BC-BD71-E927F701E0D8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

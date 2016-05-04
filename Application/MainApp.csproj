@@ -35,6 +35,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AvalonControlsLibrary">
+      <HintPath>..\..\..\..\Examples\AvalonControlsLibrary\AvalonControlsLibrary\bin\Debug\AvalonControlsLibrary.dll</HintPath>
+    </Reference>
     <Reference Include="log4net">
       <HintPath>..\lib\jmetal\log4net.dll</HintPath>
     </Reference>

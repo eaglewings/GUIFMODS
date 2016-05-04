@@ -7,7 +7,9 @@ namespace Controls
         public Axis()
         {
             Min = 0;
+            BoundaryMin = Min;
             Max = 1;
+            BoundaryMax = Max;
         }
 
         public Axis(double min, double max)

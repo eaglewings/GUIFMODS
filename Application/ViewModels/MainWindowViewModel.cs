@@ -46,6 +46,32 @@ namespace MainApp.ViewModels
             }
         }
 
+        private DataRowView selectedSolution;
+
+        public DataRowView SelectedSolution
+        {
+            get { return selectedSolution; }
+            set
+            {
+                if (selectedSolution != value)
+                {
+                    selectedSolution = value;
+                    if (selectedSolution != null)
+                    {
+                        double[] objectives = new double[problem.NumberOfProfits];
+                        for (int i = 0; i < objectives.Length; i++)
+                        {
+                            objectives[i] = (double) selectedSolution.Row.ItemArray[i];
+                        }
+                        SelectedLine = GetChartLine(objectives);
+                    }
+                    
+                    OnPropertyChanged("SelectedSolution");
+                }
+            }
+        }
+
+
         private Knapsack.Models.Problem problem;
 
         private Knapsack.Models.Problem Problem
@@ -82,6 +108,27 @@ namespace MainApp.ViewModels
             }
         }
 
+        private UserConstraintsMethod selectedUserConstraintHandlingMethod;
+
+        public UserConstraintsMethod SelectedConstraintHandlingMethod
+        {
+            get { return selectedUserConstraintHandlingMethod; }
+            set
+            {
+                selectedUserConstraintHandlingMethod = value;
+                OnPropertyChanged("SelectedConstraintHandlingMethod");
+            }
+        }
+
+        public IEnumerable<UserConstraintsMethod> ConstraintHandlingMethods
+        {
+            get
+            {
+                return Enum.GetValues(typeof(UserConstraintsMethod))
+                    .Cast<UserConstraintsMethod>();
+            }
+        }
+
         private SolutionSet currentSolutionSet;
 
         public SolutionSet CurrentSolutionSet
@@ -103,7 +150,7 @@ namespace MainApp.ViewModels
                 double[] min = new double[s.NumberOfObjectives];
                 for (int i = 0; i < min.Length; i++)
                 {
-                    min[i] = double.MinValue;
+                    min[i] = double.MaxValue;
                 }
 
                 for (int i = 0; i < s.NumberOfObjectives; i++)
@@ -133,7 +180,9 @@ namespace MainApp.ViewModels
 
                 for (int i = 0; i < problem.NumberOfProfits; i++)
                 {
-                    Axis axis = new Axis { Max = (int)Math.Ceiling(max[i]), Min = 0 };
+                    Axis axis = new Axis { Max = (int)Math.Ceiling(max[i]), Min = (int)Math.Floor(min[i])};
+                    axis.BoundaryMax = axis.Max;
+                    axis.BoundaryMin = axis.Min;
                     axis.Title = string.Format("O{0}", i + 1);
                     axes.Add(axis);
                 }
@@ -187,6 +236,22 @@ namespace MainApp.ViewModels
                 }
             }
         }
+
+        private ChartLine selectedLine;
+
+        public ChartLine SelectedLine
+        {
+            get { return selectedLine; }
+            set
+            {
+                if (selectedLine != value)
+                {
+                    selectedLine = value;
+                    OnPropertyChanged("SelectedLine");
+                }
+            }
+        }
+
 
 
         private DataTable items;
@@ -244,6 +309,26 @@ namespace MainApp.ViewModels
                 Problem.Capacities[i] = sum/2;
             }
             KnapsackProblem ksproblem = new KnapsackProblem(Problem);
+            for (int i = 0; i < Axes.Count; i++)
+            {
+                Axis axis = Axes[i];
+                if(axis.BoundaryMax != axis.Max || axis.BoundaryMin != axis.Min) {
+                    Constraint c = new Constraint();
+                    c.ObjectiveIndex = i;
+                    if(axis.BoundaryMax != axis.Max)
+                    {
+                        c.Max = axis.BoundaryMax;
+                    }
+
+                    if(axis.BoundaryMin != axis.Min)
+                    {
+                        c.Min = axis.BoundaryMin;
+                    }
+                    ksproblem.UserConstraints.Add(c);
+                    }
+            }
+
+            ksproblem.UserConstraintHandling = SelectedConstraintHandlingMethod;
             CurrentSolutionSet = Solver.Solve(ksproblem);
         }
 
