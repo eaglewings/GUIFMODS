@@ -19,6 +19,10 @@ namespace Controls
             DependencyProperty.Register("Data", typeof(IList<double>), typeof(ChartLineControl),
                 new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.AffectsRender));
 
+        public static readonly DependencyProperty AxesProperty =
+            DependencyProperty.Register("Axes", typeof(IList<Axis>), typeof(ChartLineControl),
+                new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.AffectsRender));
+
         internal static readonly DependencyProperty ParentRadarChartProperty =
             DependencyProperty.Register("ParentRadarChart", typeof(RadarChart), typeof(ChartLineControl),
                 new FrameworkPropertyMetadata(ParentRadarChart_PropertyChanged));
@@ -40,6 +44,14 @@ namespace Controls
                 SetValue(DataProperty, value);
             }
         }
+
+        
+        public IList<Axis> Axes
+        {
+            get { return (IList<Axis>)GetValue(AxesProperty); }
+            set { SetValue(AxesProperty, value); }
+        }
+
 
         internal RadarChart ParentRadarChart
         {
@@ -92,7 +104,7 @@ namespace Controls
         {
             get
             {
-                var minSide = Math.Min(RenderSize.Width, RenderSize.Height);
+                var minSide = Math.Min(ActualWidth, ActualHeight);
                 Point center = new Point(minSide / 2, minSide / 2);
                 double angleIncrementRad = 2 * Math.PI / ParentRadarChart.Axes.Count;
 
@@ -121,6 +133,11 @@ namespace Controls
                 }
                 return points;
             }
+        }
+
+        protected override Size MeasureOverride(Size constraint)
+        {
+            return constraint;
         }
 
         private static void ParentRadarChart_PropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)

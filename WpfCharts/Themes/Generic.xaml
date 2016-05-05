@@ -145,7 +145,7 @@
                                 </ItemsControl.ItemsPanel>
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate DataType="{x:Type local:ChartLine}">
-                                        <local:ChartLineControl Data="{Binding PointDataSource}">
+                                        <local:ChartLineControl Data="{Binding PointDataSource}" Axes="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:RadarChart}}, Path=Axes}">
                                             <local:ChartLineControl.Stroke>
                                                 <SolidColorBrush Color="Black" Opacity="0.2"/>
                                             </local:ChartLineControl.Stroke>
