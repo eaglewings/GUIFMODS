@@ -19,13 +19,10 @@ namespace Controls
             DependencyProperty.Register("Data", typeof(IList<double>), typeof(ChartLineControl),
                 new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.AffectsRender));
 
-        public static readonly DependencyProperty AxesProperty =
-            DependencyProperty.Register("Axes", typeof(IList<Axis>), typeof(ChartLineControl),
-                new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.AffectsRender));
 
         internal static readonly DependencyProperty ParentRadarChartProperty =
             DependencyProperty.Register("ParentRadarChart", typeof(RadarChart), typeof(ChartLineControl),
-                new FrameworkPropertyMetadata(ParentRadarChart_PropertyChanged));
+                new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.AffectsRender,ParentRadarChart_PropertyChanged));
 
 
         #endregion Dependency Property/Event Definitions
@@ -44,14 +41,6 @@ namespace Controls
                 SetValue(DataProperty, value);
             }
         }
-
-        
-        public IList<Axis> Axes
-        {
-            get { return (IList<Axis>)GetValue(AxesProperty); }
-            set { SetValue(AxesProperty, value); }
-        }
-
 
         internal RadarChart ParentRadarChart
         {
