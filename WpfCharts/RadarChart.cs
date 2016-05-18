@@ -131,13 +131,22 @@ namespace Controls
         }
 
         #endregion
-        ItemsControl axesContainer;
+        ItemsControl axesPanel;
 
         public override void OnApplyTemplate()
         {
             base.OnApplyTemplate();
 
-            axesContainer = (ItemsControl) GetTemplateChild("PART_SpokePanel");
+            Control slider;
+            
+            axesPanel = (ItemsControl) GetTemplateChild("PART_SpokePanel");
+           
+        }
+
+        private void Slider_MouseRightButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+                
+            OnAxisClicked(new AxisClickedEventArgs(null));
         }
 
 
@@ -158,7 +167,7 @@ namespace Controls
         }
 
         //Raises the AxisClicked event
-        private void OnAxisClicked(AxisClickedEventArgs e)
+        public void OnAxisClicked(AxisClickedEventArgs e)
         {
             e.RoutedEvent = AxisClickedEvent;
             RaiseEvent(e);

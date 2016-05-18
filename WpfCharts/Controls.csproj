@@ -57,6 +57,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Axis.cs" />
+    <Compile Include="AxisControl.cs" />
     <Compile Include="ChartLine.cs" />
     <Compile Include="ChartLineControl.cs" />
     <Compile Include="Converters\ConvertBoolToVisibility.cs" />

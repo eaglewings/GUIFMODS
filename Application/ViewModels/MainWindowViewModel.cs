@@ -13,14 +13,17 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Media;
+using System.Windows.Threading;
 
 namespace MainApp.ViewModels
 {
     class MainWindowViewModel : INotifyPropertyChanged
     {
-        //Notes: Constrainthandling. 
+        private AlgorithmController algorithmController;
 
         public MainWindowViewModel()
         {
@@ -30,7 +33,7 @@ namespace MainApp.ViewModels
 
             Lines = new ObservableCollection<ChartLine>();
         }
-
+        #region Properties
         private DataTable solutions = new DataTable();
 
         public DataTable Solutions
@@ -188,8 +191,8 @@ namespace MainApp.ViewModels
                 }
                 Axes = axes;
                 Lines = lines;
-                
 
+                Hypervolume = Indicator.Hypervolume(value);
 
             }
         }
@@ -269,16 +272,62 @@ namespace MainApp.ViewModels
             }
         }
 
+        private int evaluations;
+
+        public int Evaluations
+        {
+            get { return evaluations; }
+            set
+            {
+                if (evaluations != value)
+                {
+                    evaluations = value;
+                    OnPropertyChanged("Evaluations");
+                }
+            }
+        }
+
+        private double hypervolume = 0;
+
+        public double Hypervolume
+        {
+            get { return hypervolume; }
+            set
+            {
+                if (hypervolume != value)
+                {
+                    hypervolume = value;
+                    OnPropertyChanged("Hypervolume");
+                }
+            }
+        }
+
+
+        #endregion Properties
+
+
+        private void LoadProblem(string fileName)
+        {
+            IFormatter formatter = new BinaryFormatter();
+            Stream stream = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.Read);
+            var loadedModel = formatter.Deserialize(stream);
+            stream.Close();
+            Problem = (Knapsack.Models.Problem)loadedModel;
+        }
+
+        public void GenerateData()
+        {
+            LoadProblem(@"C:\Users\Benjamin\Dropbox\FHNW\Master Thesis\Experiments\ks_500_5_1");
+            SolveProblem();
+        }
+
+        #region Commands
         private void Load()
         {
             OpenFileDialog dialog = new OpenFileDialog();
             if (dialog.ShowDialog() == true)
             {
-                IFormatter formatter = new BinaryFormatter();
-                Stream stream = new FileStream(dialog.FileName, FileMode.Open, FileAccess.Read, FileShare.Read);
-                var loadedModel = formatter.Deserialize(stream);
-                stream.Close();
-                Problem = (Knapsack.Models.Problem)loadedModel;
+                LoadProblem(dialog.FileName);
             }
         }
 
@@ -329,7 +378,28 @@ namespace MainApp.ViewModels
             }
 
             ksproblem.UserConstraintHandling = SelectedConstraintHandlingMethod;
-            CurrentSolutionSet = Solver.Solve(ksproblem);
+            algorithmController = new AlgorithmController(ksproblem);
+            algorithmController.GenerationCalculated += AlgorithmController_GenerationCalculated;
+            Task.Factory.StartNew(() =>
+            {
+                CurrentSolutionSet = algorithmController.Solve();
+            }
+            );
+            
+        }
+
+        private void AlgorithmController_GenerationCalculated(object sender, JMetalCSharp.Metaheuristics.NSGAII.GenerateionCalculatedEventArgs e)
+        {
+            CurrentSolutionSet = e.Population;
+            Evaluations = e.Evaluations;
+        }
+
+        public void UpdateCurrentSolutionSet(SolutionSet solutionSet)
+        {
+            DispatchService.Invoke(() =>
+            {
+                //this.CurrentSolutionSet.Add(null);
+            });
         }
 
         private RelayCommand solveCmd;
@@ -346,7 +416,7 @@ namespace MainApp.ViewModels
             }
             set { solveCmd = value; }
         }
-
+        #endregion Commands
         #region INotifyPropertyChanged Members
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -362,5 +432,21 @@ namespace MainApp.ViewModels
         }
 
         #endregion
+    }
+
+    public static class DispatchService
+    {
+        public static void Invoke(Action action)
+        {
+            Dispatcher dispatchObject = Application.Current.Dispatcher;
+            if (dispatchObject == null || dispatchObject.CheckAccess())
+            {
+                action();
+            }
+            else
+            {
+                dispatchObject.Invoke(action);
+            }
+        }
     }
 }

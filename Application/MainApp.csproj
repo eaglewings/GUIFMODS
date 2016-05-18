@@ -70,8 +70,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Helpers\RelayCommand.cs" />
+    <Compile Include="Indicator.cs" />
     <Compile Include="KnapsackProblem.cs" />
-    <Compile Include="Solver.cs" />
+    <Compile Include="AlgorithmController.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
     <Compile Include="Views\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>

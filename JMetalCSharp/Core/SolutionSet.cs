@@ -7,7 +7,7 @@ using System.Text;
 
 namespace JMetalCSharp.Core
 {
-	public class SolutionSet
+	public class SolutionSet:ICloneable
 	{
 		public List<Solution> SolutionsList
 		{
@@ -478,5 +478,12 @@ namespace JMetalCSharp.Core
 				Console.WriteLine("" + this.SolutionsList[i]);
 			}
 		}
-	}
+
+        public object Clone()
+        {
+            SolutionSet s = new SolutionSet();
+            s.Capacity = Capacity;
+            return s;
+        }
+    }
 }

@@ -40,7 +40,7 @@
                                         <!--<Line Stroke="Black" X2="100" Y2="100" />-->
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
-                                
+
                             </ItemsControl>
                             <ItemsControl x:Name="PART_LINEPANEL" Grid.Row="1" ItemsSource="{TemplateBinding Lines}">
                                 <ItemsControl.ItemsPanel>
@@ -85,7 +85,7 @@
             </Setter.Value>
         </Setter>
     </Style>
-    
+
     <ControlTemplate TargetType="{x:Type avalon:RangeSlider}" x:Key="rangeSliderTemplate">
         <Grid>
             <Canvas>
@@ -101,10 +101,10 @@
                 <!--This size of this thumb will auto matically change by the control to 10-->
                 <RepeatButton Name="PART_RightEdge" Style="{StaticResource RepeatButtonTransparent}"/>
             </StackPanel>
-            
+
         </Grid>
     </ControlTemplate>
-    
+
     <Style TargetType="{x:Type local:RadarChart}">
         <Setter Property="Background" Value="White" />
         <Setter Property="Template">
@@ -125,14 +125,7 @@
                                 </ItemsControl.ItemsPanel>
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate DataType="{x:Type local:Axis}">
-                                        <!--<TextBlock Text="{Binding Title}" Background="{Binding ElementName=border, Path=Background}" FontSize="14" FontWeight="Bold" />-->
-                                        <!--<Line Stroke="Black" X2="100" Y2="100" />-->
-                                        <Grid>
-                                            <avalon:RangeSlider x:Name="rangeSlider" Template="{StaticResource rangeSliderTemplate}" 
-                                                                RangeStartSelected="{Binding Path=BoundaryMin, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" RangeStopSelected="{Binding Path=BoundaryMax, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                                                RangeStart="{Binding Min}" RangeStop="{Binding Max}"
-                                                                />
-                                        </Grid>
+                                        <local:AxisControl/>
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
 
@@ -165,8 +158,8 @@
             </Setter.Value>
         </Setter>
     </Style>
-    
-    
+
+
     <Style TargetType="{x:Type local:ChartLineControl}">
         <Setter Property="Stroke" Value="Black"/>
         <Setter Property="StrokeThickness" Value="1"/>
@@ -174,5 +167,27 @@
             Property="ParentRadarChart"
             Value="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:RadarChart}}, Path=.}"
             />
+    </Style>
+
+    <Style TargetType="{x:Type local:AxisControl}">
+        <Setter
+            Property="ParentRadarChart"
+            Value="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:RadarChart}}, Path=.}"
+            />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type local:AxisControl}">
+                    <Grid>
+                        <Grid.Background>
+                            <SolidColorBrush Color="Black" Opacity="0"/>
+                        </Grid.Background>
+                        <avalon:RangeSlider x:Name="rangeSlider" Template="{StaticResource rangeSliderTemplate}" 
+                                                                RangeStartSelected="{Binding Path=BoundaryMin, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" RangeStopSelected="{Binding Path=BoundaryMax, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                                RangeStart="{Binding Min}" RangeStop="{Binding Max}"
+                                                                />
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
     </Style>
 </ResourceDictionary>

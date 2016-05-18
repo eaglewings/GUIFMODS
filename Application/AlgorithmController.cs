@@ -1,4 +1,5 @@
 ﻿using JMetalCSharp.Core;
+using JMetalCSharp.Metaheuristics.NSGAII;
 using JMetalCSharp.Operators.Crossover;
 using JMetalCSharp.Operators.Mutation;
 using JMetalCSharp.Operators.Selection;
@@ -6,17 +7,23 @@ using System.Collections.Generic;
 
 namespace MainApp
 {
-    class Solver
+    class AlgorithmController
     {
-        public static SolutionSet Solve(KnapsackProblem problem)
-        {
-            Algorithm algorithm; // The algorithm to use
-            Operator crossover; // Crossover operator
-            Operator mutation; // Mutation operator
-            Operator selection; // Selection operator
+        JMetalCSharp.Metaheuristics.NSGAII.NSGAII algorithm; // The algorithm to use
+        Operator crossover; // Crossover operator
+        Operator mutation; // Mutation operator
+        Operator selection; // Selection operator
 
-            Dictionary<string, object> parameters;
-            
+        Dictionary<string, object> parameters;
+
+        public event GenerationCalculatedEventHandler GenerationCalculated
+        {
+            add { algorithm.GenerationCalculated += value; }
+            remove { algorithm.GenerationCalculated -= value; }
+        }
+
+        public AlgorithmController(KnapsackProblem problem)
+        {
             algorithm = new JMetalCSharp.Metaheuristics.NSGAII.NSGAII(problem);
             //algorithm = new ssNSGAII(problem);
 
@@ -41,12 +48,27 @@ namespace MainApp
             algorithm.AddOperator("crossover", crossover);
             algorithm.AddOperator("mutation", mutation);
             algorithm.AddOperator("selection", selection);
-            
+
+            algorithm.Initialize();
+
+        }
+
+        public SolutionSet Solve()
+        {
             SolutionSet population = algorithm.Execute();
 
             return population;
         }
 
-        
+        public SolutionSet Evaluate()
+        {
+            return null;
+        }
+
+        public SolutionSet Evaluate(int evaluations)
+        {
+            return null;
+        }
+
     }
 }

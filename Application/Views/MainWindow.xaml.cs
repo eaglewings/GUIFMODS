@@ -13,5 +13,15 @@ namespace MainApp.Views
             InitializeComponent();
             DataContext = new MainWindowViewModel();
         }
+
+        private void RadarChart_AxisClicked(object sender, Controls.AxisClickedEventArgs e)
+        {
+
+        }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            ((MainWindowViewModel)DataContext).GenerateData();
+        }
     }
 }
