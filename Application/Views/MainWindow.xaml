@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:MainApp.Views"
         xmlns:Controls="clr-namespace:Controls;assembly=Controls"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525" Loaded="Window_Loaded">
+        Title="MainWindow" Height="600" Width="900" Loaded="Window_Loaded">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition></RowDefinition>
@@ -17,10 +17,10 @@
         </Grid.ColumnDefinitions>
         <Grid Grid.Column="0">
             <Grid.RowDefinitions>
-                <RowDefinition></RowDefinition>
-                <RowDefinition></RowDefinition>
+                <RowDefinition/>
+                <RowDefinition/>
             </Grid.RowDefinitions>
-            <Controls:RadarChart Grid.Row="0"
+            <Controls:RadarChart x:Name="radarChart" Grid.Row="0"
                                Lines="{Binding Lines}" 
                                Axes="{Binding Axes}"
                                  SelectedLine ="{Binding SelectedLine}" AxisClicked="RadarChart_AxisClicked"/>
@@ -49,11 +49,13 @@
                     <ColumnDefinition></ColumnDefinition>
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
-                    <RowDefinition/>
-                    <RowDefinition/>
-                    <RowDefinition/>
-                    <RowDefinition/>
-                    <RowDefinition/>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
                 <Button Grid.Column="1" x:Name="btLoad" Content="Load" Width="75" Command="{Binding LoadCmd}" HorizontalAlignment="Right" Margin="10"/>
                 <Button Grid.Column="1" Grid.Row="1" x:Name="btSolve" Content="Solve" Width="75" Command="{Binding SolveCmd}" HorizontalAlignment="Right" Margin="10"/>
@@ -65,6 +67,33 @@
                 <Label Grid.Row="3" Grid.Column="1" Content="{Binding Evaluations}"/>
                 <Label Grid.Row="4">Hypervolume</Label>
                 <Label Grid.Row="4" Grid.Column="1" Content="{Binding Hypervolume}"/>
+                <Label Grid.Row="5">Hypervolume in constraints</Label>
+                <Label Grid.Row="5" Grid.Column="1" Content="{Binding HypervolumeConstrained}"/>
+                <GroupBox Grid.Row ="6"  Header="Axis" DataContext="{Binding SelectedAxis, ElementName=radarChart}" VerticalContentAlignment="Stretch">
+                    <Grid VerticalAlignment="Top">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"></ColumnDefinition>
+                            <ColumnDefinition></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        <Label Grid.Row="0">Name</Label>
+                        <Label Grid.Row="0" Grid.Column="1" Content="{Binding Title}"/>
+                        <Label Grid.Row="1">Min</Label>
+                        <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Min, Mode=TwoWay}"/>
+                        <Label Grid.Row="2">Max</Label>
+                        <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding Max, Mode=TwoWay}"/>
+                        <Label Grid.Row="3">Range Min</Label>
+                        <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding BoundaryMin, Mode=TwoWay}"/>
+                        <Label Grid.Row="4">Range Max</Label>
+                        <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding BoundaryMax, Mode=TwoWay}"/>
+                    </Grid>
+                </GroupBox>
             </Grid>
 
             <DataGrid Grid.Row="1" ItemsSource="{Binding Items}"></DataGrid>

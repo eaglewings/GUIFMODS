@@ -24,6 +24,19 @@ namespace MainApp.ViewModels
     class MainWindowViewModel : INotifyPropertyChanged
     {
         private AlgorithmController algorithmController;
+        private KnapsackProblem ksproblem;
+        private List<Constraint> userConstraints = new List<Constraint>();
+
+        private List<Constraint> UserConstraints
+        {
+            get { return userConstraints; }
+            set { userConstraints = value;
+                if(CurrentSolutionSet != null)
+                {
+                    HypervolumeConstrained = Indicator.HypervolumeConstrained(CurrentSolutionSet, userConstraints);
+                }
+            }
+        }
 
         public MainWindowViewModel()
         {
@@ -105,10 +118,16 @@ namespace MainApp.ViewModels
                 {
                     Axis axis = new Axis { Max = 1, Min = 0};
                     axis.Title = string.Format("O{0}", i + 1);
+                    axis.PropertyChanged += new PropertyChangedEventHandler(Axis_PropertyChanged);
                     axes.Add(axis);
                 }
                 Axes = axes;
             }
+        }
+
+        private void Axis_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            UpdateConstraints();
         }
 
         private UserConstraintsMethod selectedUserConstraintHandlingMethod;
@@ -187,12 +206,14 @@ namespace MainApp.ViewModels
                     axis.BoundaryMax = axis.Max;
                     axis.BoundaryMin = axis.Min;
                     axis.Title = string.Format("O{0}", i + 1);
+                    axis.PropertyChanged += new PropertyChangedEventHandler(Axis_PropertyChanged);
                     axes.Add(axis);
                 }
                 Axes = axes;
                 Lines = lines;
 
                 Hypervolume = Indicator.Hypervolume(value);
+                HypervolumeConstrained = Indicator.HypervolumeConstrained(value, UserConstraints);
 
             }
         }
@@ -302,6 +323,20 @@ namespace MainApp.ViewModels
             }
         }
 
+        private double hypervolumeConstrained = 0;
+
+        public double HypervolumeConstrained
+        {
+            get { return hypervolumeConstrained; }
+            set
+            {
+                if (hypervolumeConstrained != value)
+                {
+                    hypervolumeConstrained = value;
+                    OnPropertyChanged("HypervolumeConstrained");
+                }
+            }
+        }
 
         #endregion Properties
 
@@ -313,12 +348,24 @@ namespace MainApp.ViewModels
             var loadedModel = formatter.Deserialize(stream);
             stream.Close();
             Problem = (Knapsack.Models.Problem)loadedModel;
+            for (int i = 0; i < Problem.Capacities.Length; i++)
+            {
+                double sum = 0;
+                foreach (var item in Problem.Items)
+                {
+                    sum += item.Characteristics[i];
+                }
+                Problem.Capacities[i] = sum / 2;
+            }
+            ksproblem = new KnapsackProblem(Problem);
         }
 
         public void GenerateData()
         {
-            LoadProblem(@"C:\Users\Benjamin\Dropbox\FHNW\Master Thesis\Experiments\ks_500_5_1");
-            SolveProblem();
+            if (Problem == null)
+            {
+                LoadProblem(@"C:\Users\Benjamin\Desktop\ks_3_1_20");
+            }
         }
 
         #region Commands
@@ -348,36 +395,8 @@ namespace MainApp.ViewModels
 
         private void SolveProblem()
         {
-            for (int i = 0; i < Problem.Capacities.Length; i++)
-            {
-                double sum = 0;
-                foreach (var item in Problem.Items)
-                {
-                    sum += item.Characteristics[i];
-                }
-                Problem.Capacities[i] = sum/2;
-            }
-            KnapsackProblem ksproblem = new KnapsackProblem(Problem);
-            for (int i = 0; i < Axes.Count; i++)
-            {
-                Axis axis = Axes[i];
-                if(axis.BoundaryMax != axis.Max || axis.BoundaryMin != axis.Min) {
-                    Constraint c = new Constraint();
-                    c.ObjectiveIndex = i;
-                    if(axis.BoundaryMax != axis.Max)
-                    {
-                        c.Max = axis.BoundaryMax;
-                    }
-
-                    if(axis.BoundaryMin != axis.Min)
-                    {
-                        c.Min = axis.BoundaryMin;
-                    }
-                    ksproblem.UserConstraints.Add(c);
-                    }
-            }
-
             ksproblem.UserConstraintHandling = SelectedConstraintHandlingMethod;
+            ksproblem.UserConstraints = UserConstraints;
             algorithmController = new AlgorithmController(ksproblem);
             algorithmController.GenerationCalculated += AlgorithmController_GenerationCalculated;
             Task.Factory.StartNew(() =>
@@ -386,6 +405,31 @@ namespace MainApp.ViewModels
             }
             );
             
+        }
+
+        private void UpdateConstraints()
+        {
+            List<Constraint> constraints = new List<Constraint>();
+            for (int i = 0; i < Axes.Count; i++)
+            {
+                Axis axis = Axes[i];
+                if (axis.BoundaryMax != axis.Max || axis.BoundaryMin != axis.Min)
+                {
+                    Constraint c = new Constraint();
+                    c.ObjectiveIndex = i;
+                    if (axis.BoundaryMax != axis.Max)
+                    {
+                        c.Max = axis.BoundaryMax;
+                    }
+
+                    if (axis.BoundaryMin != axis.Min)
+                    {
+                        c.Min = axis.BoundaryMin;
+                    }
+                    constraints.Add(c);
+                }
+            }
+            UserConstraints = constraints;
         }
 
         private void AlgorithmController_GenerationCalculated(object sender, JMetalCSharp.Metaheuristics.NSGAII.GenerateionCalculatedEventArgs e)
@@ -410,7 +454,7 @@ namespace MainApp.ViewModels
             {
                 if (solveCmd == null)
                 {
-                    solveCmd = new RelayCommand(p => SolveProblem(), p => { return Problem != null; });
+                    solveCmd = new RelayCommand(p => SolveProblem());
                 }
                 return solveCmd;
             }

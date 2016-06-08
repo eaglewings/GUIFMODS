@@ -88,9 +88,6 @@
 
     <ControlTemplate TargetType="{x:Type avalon:RangeSlider}" x:Key="rangeSliderTemplate">
         <Grid>
-            <Canvas>
-                <Label Content="{TemplateBinding RangeStartSelected}" Canvas.Left="{Binding ElementName=PART_LeftEdge, Path=Width}"></Label>
-            </Canvas>
             <Border Background="{StaticResource Thumb.Static.Background}" Height="2"></Border>
             <StackPanel Name="PART_RangeSliderContainer" HorizontalAlignment="Stretch">
                 <RepeatButton Name="PART_LeftEdge" Style="{StaticResource RepeatButtonTransparent}"/>
@@ -174,6 +171,18 @@
             Property="ParentRadarChart"
             Value="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:RadarChart}}, Path=.}"
             />
+        <Setter
+            Property="Max"
+            Value="{Binding Path=Max}"/>
+        <Setter
+            Property="Min"
+            Value="{Binding Path=Min}"/>
+        <Setter
+            Property="MaxBoundary"
+            Value="{Binding Path=BoundaryMax}"/>
+        <Setter
+            Property="MinBoundary"
+            Value="{Binding Path=BoundaryMin}"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type local:AxisControl}">
@@ -182,7 +191,8 @@
                             <SolidColorBrush Color="Black" Opacity="0"/>
                         </Grid.Background>
                         <avalon:RangeSlider x:Name="rangeSlider" Template="{StaticResource rangeSliderTemplate}" 
-                                                                RangeStartSelected="{Binding Path=BoundaryMin, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" RangeStopSelected="{Binding Path=BoundaryMax, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                                RangeStartSelected="{Binding Path=BoundaryMin, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                                RangeStopSelected="{Binding Path=BoundaryMax, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                                                 RangeStart="{Binding Min}" RangeStop="{Binding Max}"
                                                                 />
                     </Grid>

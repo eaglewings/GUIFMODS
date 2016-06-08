@@ -55,7 +55,17 @@ namespace Controls
         }
 
         #endregion Axes
+        #region SelectedAxis
+        public static readonly DependencyProperty SelectedAxisProperty =
+            DependencyProperty.Register("SelectedAxis", typeof(Axis), typeof(RadarChart),
+                new FrameworkPropertyMetadata(null));
 
+        public Axis SelectedAxis
+        {
+            get { return (Axis)GetValue(SelectedAxisProperty); }
+            set { SetValue(SelectedAxisProperty, value); }
+        }
+        #endregion
         #region Lines
 
         /// <summary>
@@ -131,6 +141,8 @@ namespace Controls
         }
 
         #endregion
+
+       
         ItemsControl axesPanel;
 
         public override void OnApplyTemplate()
@@ -169,6 +181,14 @@ namespace Controls
         //Raises the AxisClicked event
         public void OnAxisClicked(AxisClickedEventArgs e)
         {
+            if(e.Axis == SelectedAxis)
+            {
+                SelectedAxis = null;
+            }
+            else
+            {
+                SelectedAxis = e.Axis;
+            }
             e.RoutedEvent = AxisClickedEvent;
             RaiseEvent(e);
         }

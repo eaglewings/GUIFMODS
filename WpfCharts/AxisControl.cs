@@ -32,6 +32,59 @@ namespace Controls
             set {SetValue(ParentRadarChartProperty, value);}
         }
 
+        public static readonly DependencyProperty MaxProperty =
+            DependencyProperty.Register("Max", typeof(int), typeof(AxisControl),
+                new FrameworkPropertyMetadata(1));
+
+        public int Max
+        {
+            get { return (int)GetValue(MaxProperty); }
+            set {
+                SetValue(MaxProperty, value);
+                if(ParentRadarChart != null)
+                {
+                    ParentRadarChart.InvalidateVisual();
+                }
+            }
+        }
+
+        public static readonly DependencyProperty MinProperty =
+            DependencyProperty.Register("Min", typeof(int), typeof(AxisControl),
+                new FrameworkPropertyMetadata(0));
+
+        public int Min
+        {
+            get { return (int)GetValue(MinProperty); }
+            set {
+                SetValue(MinProperty, value);
+                if (ParentRadarChart != null)
+                {
+                    ParentRadarChart.InvalidateVisual();
+                }
+            }
+        }
+
+        public static readonly DependencyProperty MaxBoundaryProperty =
+                    DependencyProperty.Register("MaxBoundary", typeof(double), typeof(AxisControl),
+                        new FrameworkPropertyMetadata(1D));
+
+        public double MaxBoundary
+        {
+            get { return (int)GetValue(MaxBoundaryProperty); }
+            set { SetValue(MaxBoundaryProperty, value); }
+        }
+
+        public static readonly DependencyProperty MinBoundaryProperty =
+                    DependencyProperty.Register("MinBoundary", typeof(double), typeof(AxisControl),
+                        new FrameworkPropertyMetadata(0D));
+
+        public int MinBoundary
+        {
+            get { return (int)GetValue(MinBoundaryProperty); }
+            set { SetValue(MinBoundaryProperty, value); }
+        }
+
+
         public override void OnApplyTemplate()
         {
             base.OnApplyTemplate();
@@ -39,6 +92,8 @@ namespace Controls
             this.MouseLeftButtonUp += AxisControl_MouseLeftButtonUp;
 
         }
+
+
 
         private void AxisControl_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
