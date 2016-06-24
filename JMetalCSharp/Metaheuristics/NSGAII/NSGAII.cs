@@ -37,6 +37,7 @@ namespace JMetalCSharp.Metaheuristics.NSGAII
         int populationSize = -1;
         int maxEvaluations = -1;
         int evaluations;
+        int totalEvaluations;
 
         QualityIndicator.QualityIndicator indicators = null; // QualityIndicator object
         int requiredEvaluations; // Use in the example of use of the
@@ -108,6 +109,7 @@ namespace JMetalCSharp.Metaheuristics.NSGAII
             //Initialize the variables
             population = new SolutionSet(populationSize);
             evaluations = 0;
+            totalEvaluations = 0;
 
             requiredEvaluations = 0;
 
@@ -135,6 +137,7 @@ namespace JMetalCSharp.Metaheuristics.NSGAII
                 evaluations++;
                 initialPopulation.Add(newSolution);
             }
+            totalEvaluations = evaluations;
             return initialPopulation;
         }
 
@@ -165,9 +168,10 @@ namespace JMetalCSharp.Metaheuristics.NSGAII
                     offspringPopulation.Add(offSpring[0]);
                     offspringPopulation.Add(offSpring[1]);
                     evaluations += 2;
+                    totalEvaluations += 2;
                 }
             }
-
+            
             // Create the solutionSet union of solutionSet and offSpring
             union = ((SolutionSet)population).Union(offspringPopulation);
 
