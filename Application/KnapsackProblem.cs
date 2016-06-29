@@ -48,6 +48,11 @@ namespace MainApp
             set { userConstraints = value; }
         }
 
+        public Knapsack.Models.Problem Problem
+        {
+            get { return problem; }
+        }
+
         public override void Evaluate(Solution solution)
         {
             Binary b = (Binary) solution.Variable[0];

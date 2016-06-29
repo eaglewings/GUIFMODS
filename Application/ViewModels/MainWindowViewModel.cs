@@ -23,17 +23,25 @@ namespace MainApp.ViewModels
 {
     class MainWindowViewModel : INotifyPropertyChanged
     {
-        private AlgorithmController algorithmController;
+        private DynamicNSGAII algorithm;
         private KnapsackProblem ksproblem;
-        private List<Constraint> userConstraints = new List<Constraint>();
+        private Task solvingTask;
 
-        private List<Constraint> UserConstraints
+
+        private ObservableCollection<Constraint> userConstraints = new ObservableCollection<Constraint>();
+
+        public ObservableCollection<Constraint> UserConstraints
         {
             get { return userConstraints; }
-            set { userConstraints = value;
-                if(CurrentSolutionSet != null)
+            set {
+                if(userConstraints != value)
                 {
-                    HypervolumeConstrained = Indicator.HypervolumeConstrained(CurrentSolutionSet, userConstraints);
+                    userConstraints = value;
+                    if (CurrentSolutionSet != null)
+                    {
+                        HypervolumeConstrained = Indicator.HypervolumeConstrained(CurrentSolutionSet, userConstraints.ToList<Constraint>());
+                    }
+                    OnPropertyChanged("UserConstraints");
                 }
             }
         }
@@ -197,23 +205,54 @@ namespace MainApp.ViewModels
                     lines.Add(GetChartLine(objectives));
                 }
                 Solutions = solutions;
+                
 
-                List<Axis> axes = new List<Axis>();
-
-                for (int i = 0; i < problem.NumberOfProfits; i++)
+                if(Axes.Count == problem.NumberOfProfits)
                 {
-                    Axis axis = new Axis { Max = (int)Math.Ceiling(max[i]), Min = (int)Math.Floor(min[i])};
-                    axis.BoundaryMax = axis.Max;
-                    axis.BoundaryMin = axis.Min;
-                    axis.Title = string.Format("O{0}", i + 1);
-                    axis.PropertyChanged += new PropertyChangedEventHandler(Axis_PropertyChanged);
-                    axes.Add(axis);
+                    List<Axis> axes = new List<Axis>();
+
+                    for (int i = 0; i < problem.NumberOfProfits; i++)
+                    {
+                        Axis axis = new Axis { Max = (int)Math.Ceiling(max[i]), Min = (int)Math.Floor(min[i]) };
+                        axis.BoundaryMax = axis.Max;
+                        axis.BoundaryMin = axis.Min;
+                        axis.Title = string.Format("O{0}", i + 1);
+                        axis.PropertyChanged += new PropertyChangedEventHandler(Axis_PropertyChanged);
+                        axes.Add(axis);
+                    }
+                    Axes = axes;
                 }
-                Axes = axes;
+                else
+                {
+                    for (int i = 0; i < problem.NumberOfProfits; i++)
+                    {
+                        Axis axis = Axes[i];
+                        int newMax = (int)Math.Ceiling(max[i]);
+                        int newMin = (int)Math.Floor(min[i]);
+                        double newBoundaryMax = axis.BoundaryMax;
+                        double newBoundaryMin = axis.BoundaryMin;
+                        
+                        if(axis.Max == axis.BoundaryMax)
+                        {
+                            newBoundaryMax = newMax;
+                        }
+                        if(axis.Min == axis.BoundaryMin)
+                        {
+                            newBoundaryMin = newMin;
+                        }
+
+                        axis.Max = newMax;
+                        axis.Min = newMin;
+                        axis.BoundaryMax = newBoundaryMax;
+                        axis.BoundaryMin = newBoundaryMin;
+                    }
+                }
+                
+
                 Lines = lines;
 
                 Hypervolume = Indicator.Hypervolume(value);
-                HypervolumeConstrained = Indicator.HypervolumeConstrained(value, UserConstraints);
+                HypervolumeConstrained = Indicator.HypervolumeConstrained(value, UserConstraints.ToList<Constraint>());
 
             }
         }
@@ -226,7 +265,6 @@ namespace MainApp.ViewModels
                 LineColor = Colors.Red,
                 LineThickness = 1,
             };
-            
 
             line.PointDataSource = new List<double>(objectives);
             return line;
@@ -275,8 +313,6 @@ namespace MainApp.ViewModels
                 }
             }
         }
-
-
 
         private DataTable items;
 
@@ -338,6 +374,7 @@ namespace MainApp.ViewModels
             }
         }
 
+
         #endregion Properties
 
 
@@ -358,6 +395,9 @@ namespace MainApp.ViewModels
                 Problem.Capacities[i] = sum / 2;
             }
             ksproblem = new KnapsackProblem(Problem);
+            algorithm = new DynamicNSGAII(ksproblem);
+            algorithm.GenerationCalculated += Algorithm_GenerationCalculated;
+            algorithm.SolutionEvaluated += Algorithm_GenerationCalculated;
         }
 
         public void GenerateData()
@@ -395,16 +435,20 @@ namespace MainApp.ViewModels
 
         private void SolveProblem()
         {
-            ksproblem.UserConstraintHandling = SelectedConstraintHandlingMethod;
-            ksproblem.UserConstraints = UserConstraints;
-            algorithmController = new AlgorithmController(ksproblem);
-            algorithmController.GenerationCalculated += AlgorithmController_GenerationCalculated;
-            Task.Factory.StartNew(() =>
+            if ((solvingTask != null) && (solvingTask.Status != TaskStatus.RanToCompletion))
             {
-                CurrentSolutionSet = algorithmController.Solve();
+                algorithm.IsRunning = false;
             }
-            );
-            
+            else
+            {
+                ksproblem.UserConstraintHandling = SelectedConstraintHandlingMethod;
+                ksproblem.UserConstraints = UserConstraints.ToList<Constraint>();
+                solvingTask = Task.Factory.StartNew(() =>
+                {
+                    algorithm.IsRunning = true;
+                    CurrentSolutionSet = algorithm.Execute();
+                });
+            }
         }
 
         private void UpdateConstraints()
@@ -429,10 +473,10 @@ namespace MainApp.ViewModels
                     constraints.Add(c);
                 }
             }
-            UserConstraints = constraints;
+            UserConstraints = new ObservableCollection<Constraint>(constraints);
         }
 
-        private void AlgorithmController_GenerationCalculated(object sender, JMetalCSharp.Metaheuristics.NSGAII.GenerateionCalculatedEventArgs e)
+        private void Algorithm_GenerationCalculated(object sender, NSGAIIEventArgs e)
         {
             CurrentSolutionSet = e.Population;
             Evaluations = e.Evaluations;

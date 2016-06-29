@@ -70,6 +70,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Constraint.cs" />
+    <Compile Include="DynamicNSGAII.cs" />
     <Compile Include="Helpers\RelayCommand.cs" />
     <Compile Include="Indicator.cs" />
     <Compile Include="KnapsackProblem.cs" />
@@ -120,6 +121,9 @@
       <Project>{afce1275-7070-41aa-b6fe-dbdd1af25d7c}</Project>
       <Name>Controls</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Logic\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -21,9 +21,10 @@
                 <RowDefinition/>
             </Grid.RowDefinitions>
             <Controls:RadarChart x:Name="radarChart" Grid.Row="0"
-                               Lines="{Binding Lines}" 
-                               Axes="{Binding Axes}"
-                                 SelectedLine ="{Binding SelectedLine}" AxisClicked="RadarChart_AxisClicked"/>
+                                Lines="{Binding Lines}" 
+                                Axes="{Binding Axes}"
+                                SelectedLine ="{Binding SelectedLine}"
+                                AxisClicked="RadarChart_AxisClicked"/>
             <DataGrid Grid.Row="1" 
                       ItemsSource="{Binding Solutions}"
                       SelectedItem="{Binding Path=SelectedSolution, Mode=TwoWay}">
@@ -96,7 +97,7 @@
                 </GroupBox>
             </Grid>
 
-            <DataGrid Grid.Row="1" ItemsSource="{Binding Items}"></DataGrid>
+            <DataGrid Grid.Row="1" ItemsSource="{Binding UserConstraints}"></DataGrid>
 
 
         </Grid>

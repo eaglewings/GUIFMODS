@@ -9,7 +9,7 @@ namespace MainApp
 {
     class AlgorithmController
     {
-        JMetalCSharp.Metaheuristics.NSGAII.NSGAII algorithm; // The algorithm to use
+        DynamicNSGAII algorithm; // The algorithm to use
         Operator crossover; // Crossover operator
         Operator mutation; // Mutation operator
         Operator selection; // Selection operator
@@ -22,9 +22,15 @@ namespace MainApp
             remove { algorithm.GenerationCalculated -= value; }
         }
 
+        public event SolutionEvaluatedEventHandler SolutionEvaluated
+        {
+            add { algorithm.SolutionEvaluated += value; }
+            remove { algorithm.SolutionEvaluated -= value; }
+        }
+
         public AlgorithmController(KnapsackProblem problem)
         {
-            algorithm = new JMetalCSharp.Metaheuristics.NSGAII.NSGAII(problem);
+            algorithm = new DynamicNSGAII(problem);
             //algorithm = new ssNSGAII(problem);
 
             // Algorithm parameters

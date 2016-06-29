@@ -5,9 +5,9 @@ using System;
 
 namespace JMetalCSharp.Metaheuristics.NSGAII
 {
-    public class GenerateionCalculatedEventArgs : EventArgs
+    public class NSGAIIEventArgs : EventArgs
     {
-        public GenerateionCalculatedEventArgs(SolutionSet p)
+        public NSGAIIEventArgs(SolutionSet p)
         {
             Population = p;
         }
@@ -22,33 +22,41 @@ namespace JMetalCSharp.Metaheuristics.NSGAII
         public int Evaluations { get; set; }
     }
 
-    public delegate void GenerationCalculatedEventHandler(object sender, GenerateionCalculatedEventArgs e);
-	/// <summary>
-	/// Implementation of NSGA-II. This implementation of NSGA-II makes use of a
-	/// QualityIndicator object to obtained the convergence speed of the algorithm.
-	/// This version is used in the paper: A.J. Nebro, J.J. Durillo, C.A. Coello
-	/// Coello, F. Luna, E. Alba "A Study of Convergence Speed in Multi-Objective
-	/// Metaheuristics." To be presented in: PPSN'08. Dortmund. September 2008.
-	/// </summary>
-	public class NSGAII : Algorithm
+    public delegate void GenerationCalculatedEventHandler(object sender, NSGAIIEventArgs e);
+    public delegate void SolutionEvaluatedEventHandler(object sender, NSGAIIEventArgs e);
+
+
+    /// <summary>
+    /// Implementation of NSGA-II. This implementation of NSGA-II makes use of a
+    /// QualityIndicator object to obtained the convergence speed of the algorithm.
+    /// This version is used in the paper: A.J. Nebro, J.J. Durillo, C.A. Coello
+    /// Coello, F. Luna, E. Alba "A Study of Convergence Speed in Multi-Objective
+    /// Metaheuristics." To be presented in: PPSN'08. Dortmund. September 2008.
+    /// </summary>
+    public class NSGAII : Algorithm
 	{
         public event GenerationCalculatedEventHandler GenerationCalculated;
+        public event SolutionEvaluatedEventHandler SolutionEvaluated;
 
         int populationSize = -1;
         int maxEvaluations = -1;
         int evaluations;
         int totalEvaluations;
 
+        int evaluationsEventCounter;
+
         QualityIndicator.QualityIndicator indicators = null; // QualityIndicator object
         int requiredEvaluations; // Use in the example of use of the
                                  // indicators object (see below)
 
         SolutionSet population;
-
+        SolutionSet offspringPopulation;
 
         Operator mutationOperator;
         Operator crossoverOperator;
         Operator selectionOperator;
+
+
 
         #region Constructors
 
@@ -59,11 +67,14 @@ namespace JMetalCSharp.Metaheuristics.NSGAII
         public NSGAII(Problem problem)
 			: base(problem)
 		{
+            EvaluationsBetweenEvents = 50;
 		}
 
-		#endregion
+        #endregion
 
-        protected virtual void OnGenerationCalculated(GenerateionCalculatedEventArgs e)
+        public int EvaluationsBetweenEvents { get; set; }
+
+        protected virtual void OnGenerationCalculated(NSGAIIEventArgs e)
         {
             e.Evaluations = evaluations;
             if (GenerationCalculated != null)
@@ -71,20 +82,37 @@ namespace JMetalCSharp.Metaheuristics.NSGAII
                 GenerationCalculated(this, e);
             }
         }
-		#region Public Override
 
-		/// <summary>
-		/// Runs the NSGA-II algorithm.
-		/// </summary>
-		/// <returns>a <code>SolutionSet</code> that is a set of non dominated solutions as a result of the algorithm execution</returns>
-		public override SolutionSet Execute()
+        protected virtual void OnSolutionEvaluated()
+        {
+            NSGAIIEventArgs e;
+           
+            evaluationsEventCounter++;
+            if ((EvaluationsBetweenEvents) > 0 &&  (evaluationsEventCounter >= EvaluationsBetweenEvents))
+            {
+                evaluationsEventCounter = 0;
+                e = new NSGAIIEventArgs(GetCurrentFront());
+                e.Evaluations = evaluations;
+                if (SolutionEvaluated != null)
+                {
+                    SolutionEvaluated(this, e);
+                }
+            }
+        }
+        #region Public Override
+
+        /// <summary>
+        /// Runs the NSGA-II algorithm.
+        /// </summary>
+        /// <returns>a <code>SolutionSet</code> that is a set of non dominated solutions as a result of the algorithm execution</returns>
+        public override SolutionSet Execute()
 		{
             SolutionSet nondominatedFront;
 			// Generations 
 			while (evaluations < maxEvaluations)
 			{
                 nondominatedFront = CalculateNextGeneration();
-                OnGenerationCalculated(new GenerateionCalculatedEventArgs(population));
+                OnGenerationCalculated(new NSGAIIEventArgs(population));
 			}
 
 			// Return as output parameter the required evaluations
@@ -143,7 +171,6 @@ namespace JMetalCSharp.Metaheuristics.NSGAII
 
         private SolutionSet CalculateNextGeneration()
         {
-            SolutionSet offspringPopulation;
             SolutionSet union;
 
             Distance distance = new Distance();
@@ -161,14 +188,8 @@ namespace JMetalCSharp.Metaheuristics.NSGAII
                     Solution[] offSpring = (Solution[])crossoverOperator.Execute(parents);
                     mutationOperator.Execute(offSpring[0]);
                     mutationOperator.Execute(offSpring[1]);
-                    Problem.Evaluate(offSpring[0]);
-                    Problem.EvaluateConstraints(offSpring[0]);
-                    Problem.Evaluate(offSpring[1]);
-                    Problem.EvaluateConstraints(offSpring[1]);
-                    offspringPopulation.Add(offSpring[0]);
-                    offspringPopulation.Add(offSpring[1]);
-                    evaluations += 2;
-                    totalEvaluations += 2;
+                    Evaluate(offSpring[0]);
+                    Evaluate(offSpring[1]);
                 }
             }
             
@@ -232,6 +253,29 @@ namespace JMetalCSharp.Metaheuristics.NSGAII
                     requiredEvaluations = evaluations;
                 }
             }
+            return ranking.GetSubfront(0);
+        }
+
+        private void Evaluate(Solution solution)
+        {
+            Problem.Evaluate(solution);
+            Problem.EvaluateConstraints(solution);
+            offspringPopulation.Add(solution);
+            evaluations++;
+            totalEvaluations++;
+            OnSolutionEvaluated();
+        }
+
+        private SolutionSet GetCurrentFront()
+        {
+            SolutionSet union;
+
+            // Create the solutionSet union of solutionSet and offSpring
+            union = ((SolutionSet)population).Union(offspringPopulation);
+
+            // Ranking the union
+            Ranking ranking = new Ranking(union);
+
             return ranking.GetSubfront(0);
         }
     }

@@ -4,6 +4,13 @@ using System.Collections.Generic;
 
 namespace MainApp
 {
+
+    public class Metric
+    {
+        public double HypervolumeConstrained { get; set; }
+        public int SolutionsWithinConstraints { get; set; }
+    }
+
     public class Indicator
     {
         public static double Hypervolume(SolutionSet set)
@@ -22,9 +29,8 @@ namespace MainApp
             return hypervolume;
         }
 
-        public static double HypervolumeConstrained(SolutionSet set, List<Constraint> constraints)
+        private static List<double[]> GetConstrainedSet(SolutionSet set, List<Constraint> constraints)
         {
-            double hypervolume = 0;
             List<double[]> constrainedSolutions = new List<double[]>();
             double[][] solutions = set.WriteObjectivesToMatrix();
             int nrOfSolutions = solutions.Length;
@@ -42,18 +48,25 @@ namespace MainApp
                     double objective = solutions[i][j] * (-1);
                     Constraint constraint = objectiveConstraints[j];
 
-                    if(constraint != null)
+                    if (constraint != null)
                     {
-                        if((constraint.Min != null) && (objective < constraint.Min))
+                        if ((constraint.Max != null) && (objective > constraint.Max))
                         {
                             solution = null;
                             break;
                         }
 
-                        if ((constraint.Max != null) && (objective > constraint.Max))
+                        if (constraint.Min != null)
                         {
-                            solution = null;
-                            break;
+                            if (objective < constraint.Min)
+                            {
+                                solution = null;
+                                break;
+                            }
+                            else
+                            {
+                                objective -= (double)constraint.Min; //moves the reference point to constraints minimum
+                            }
                         }
                     }
                     solution[j] = objective;
@@ -63,12 +76,29 @@ namespace MainApp
                     constrainedSolutions.Add(solution);
                 }
             }
+            return constrainedSolutions;
+        }
 
+        public static double HypervolumeConstrained(SolutionSet set, List<Constraint> constraints)
+        {
+            double hypervolume = 0;
 
-            hypervolume = (new HyperVolume()).CalculateHypervolume(constrainedSolutions.ToArray(), constrainedSolutions.ToArray().Length, nrOfObjectives);
+            List<double[]> constrainedSolutions = GetConstrainedSet(set, constraints);
 
+            hypervolume = (new HyperVolume()).CalculateHypervolume(constrainedSolutions.ToArray(), constrainedSolutions.ToArray().Length, set.Get(0).NumberOfObjectives);
 
             return hypervolume;
+        }
+
+        public static Metric Metrics(SolutionSet set, List<Constraint> constraints)
+        {
+            Metric m = new Metric();
+            List<double[]> constrainedSolutions = GetConstrainedSet(set, constraints);
+
+            m.HypervolumeConstrained = (new HyperVolume()).CalculateHypervolume(constrainedSolutions.ToArray(), constrainedSolutions.ToArray().Length, set.Get(0).NumberOfObjectives);
+            m.SolutionsWithinConstraints = constrainedSolutions.Count;
+
+            return m;
         }
     }
 }
