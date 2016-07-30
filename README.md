@@ -1,3 +1,4 @@
 # GUIFMODS
 Graphical User Interface For Multi-Objective Decision Support
-Masterthesis Fachhochschule Nordwestschweiz - Hochschule für Wirtschaft - MSc Business Information Systems
+
+A master thesis presented to the School of Business of the University of Applied Sciences and Arts Northwestern Switzerland in partial fulfillment of the requirements for the degree of Master of Science in Business Information Systems
