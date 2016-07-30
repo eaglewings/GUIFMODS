@@ -75,6 +75,8 @@
     <Compile Include="Indicator.cs" />
     <Compile Include="KnapsackProblem.cs" />
     <Compile Include="AlgorithmController.cs" />
+    <Compile Include="Logic\BinaryTournament3.cs" />
+    <Compile Include="Logic\SoftConstraintViolationComparator.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
     <Compile Include="Views\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
@@ -122,9 +124,7 @@
       <Name>Controls</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Logic\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

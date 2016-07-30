@@ -5,6 +5,7 @@ using JMetalCSharp.Operators.Selection;
 using JMetalCSharp.QualityIndicator;
 using JMetalCSharp.Utils;
 using JMetalCSharp.Utils.Comparators;
+using MainApp.Logic;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,6 +29,8 @@ namespace MainApp
         }
 
         public int Evaluations { get; set; }
+
+        public long ElapsedtimeMs { get; set; }
     }
 
     public delegate void GenerationCalculatedEventHandler(object sender, NSGAIIEventArgs e);
@@ -67,6 +70,9 @@ namespace MainApp
 
         DynamicNSGAIIState state = DynamicNSGAIIState.Initialization;
 
+        System.Diagnostics.Stopwatch stopwatch = new System.Diagnostics.Stopwatch();
+        long stopwatchcounter = 0;
+
         #region Constructors
 
         /// <summary>
@@ -79,7 +85,7 @@ namespace MainApp
             EvaluationsBetweenEvents = 50;
             RequiredEvaluations = 0;
 
-            populationSize = 100;
+            populationSize = 500;
 
             generation = 0;
 
@@ -89,18 +95,23 @@ namespace MainApp
             Operator crossover = CrossoverFactory.GetCrossoverOperator("SinglePointCrossover", parameters);
 
             parameters = new Dictionary<string, object>();
-            parameters.Add("probability", 1.0 / problem.NumberOfVariables);
+            parameters.Add("probability", 1.0 / problem.GetLength(0));
             Operator mutation = MutationFactory.GetMutationOperator("BitFlipMutation", parameters);
 
             // Selection Operator 
             parameters = null;
-            Operator selection = SelectionFactory.GetSelectionOperator("BinaryTournament2", parameters);
+            Operator selection = new BinaryTournament3(parameters);
 
             // Add the operators to the algorithm
             AddOperator("crossover", crossover);
             AddOperator("mutation", mutation);
             AddOperator("selection", selection);
             
+        }
+
+        public DynamicNSGAII(Problem problem, int populationSize) : this(problem)
+        {
+            this.populationSize = populationSize;
         }
 
         #endregion
@@ -142,13 +153,16 @@ namespace MainApp
             evaluationsEventCounter++;
             if ((EvaluationsBetweenEvents) > 0 && (evaluationsEventCounter >= EvaluationsBetweenEvents))
             {
-                evaluationsEventCounter = 0;
+                evaluationsEventCounter = evaluations % EvaluationsBetweenEvents;
                 e = new NSGAIIEventArgs(GetCurrentNondominatedFront());
                 e.Evaluations = evaluations;
+                stopwatch.Stop();
+                e.ElapsedtimeMs = stopwatch.ElapsedMilliseconds;
                 if (SolutionEvaluated != null)
                 {
                     SolutionEvaluated(this, e);
                 }
+                stopwatch.Restart();
             }
         }
 
@@ -166,6 +180,7 @@ namespace MainApp
                 {
                     case DynamicNSGAIIState.Initialization:
                         Initialize();
+                        stopwatch.Start();
                         state = DynamicNSGAIIState.SelectAndMate;
                         break;
                     case DynamicNSGAIIState.SelectAndMate:
@@ -229,7 +244,9 @@ namespace MainApp
                 Problem.EvaluateConstraints(newSolution);
                 evaluations++;
                 initialPopulation.Add(newSolution);
+                evaluationsEventCounter++;
             }
+
             return initialPopulation;
         }
 
@@ -256,6 +273,10 @@ namespace MainApp
 
         private void Evaluate(Solution solution)
         {
+            if(offspringPopulation.Size() == 0)
+            {
+                generation++;
+            }
             Problem.Evaluate(solution);
             Problem.EvaluateConstraints(solution);
             offspringPopulation.Add(solution);
@@ -271,7 +292,7 @@ namespace MainApp
             SolutionSet union = ((SolutionSet)population).Union(offspringPopulation);
 
             // Ranking the union
-            Ranking ranking = new Ranking(union);
+            Ranking ranking = new Ranking(union, new SoftConstraintViolationComparator());
 
             int remain = populationSize;
             int index = 0;
@@ -316,7 +337,6 @@ namespace MainApp
             }
 
             population = newParentPopulation;
-            generation++;
             offspringPopulation.Clear();
         }
 
@@ -328,7 +348,7 @@ namespace MainApp
             union = ((SolutionSet)population).Union(offspringPopulation);
 
             // Ranking the union
-            Ranking ranking = new Ranking(union);
+            Ranking ranking = new Ranking(union, new SoftConstraintViolationComparator());
 
             return ranking.GetSubfront(0);
         }

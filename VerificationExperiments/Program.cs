@@ -14,32 +14,78 @@ namespace VerificationExperiments
 {
     class Program
     {
-        static KnapsackProblem problem1;
-        static KnapsackProblem problem2;
+        static Knapsack.Models.Problem knapsackmodel;
         static List<Constraint> constraints;
+        static string experimentID;
+        static int evaluationsIntervall;
+        static int maxEvaluations;
+        static int populationSize;
+
+        static readonly int[] ITEMS = { 500 };
+        static readonly int[] NR_OBJECTIVES = { 5, 7 };
 
         static void Main(string[] args)
         {
-            LoadProblem(@"C:\Users\Benjamin\Desktop\ks_3_1_20");
-            constraints = new List<Constraint>();
-            /*
-            for (int i = 0; i < problem1.NumberOfObjectives; i++)
+            //Analysis.Write();
+            ConductExperiments();
+          // NadirUtopia.Write();
+        }
+        static void ConductExperiments()
+        {
+            experimentID = DateTime.Now.ToString("s").Replace(":", "-");
+
+            evaluationsIntervall = 2000;
+            maxEvaluations = 100000;
+            populationSize = 500;
+
+            experimentID = "P " + populationSize.ToString("0000") + " - Max " + (maxEvaluations / 1000).ToString("000")
+                + "K - Intervall " + evaluationsIntervall.ToString("0000") + DateTime.Now.ToString("s").Replace(":", "-");
+
+            foreach (var items in ITEMS)
             {
-                constraints.Add(new Constraint { Min = null, Max = null, ObjectiveIndex = i });
+                foreach (var nrObjectives in NR_OBJECTIVES)
+                {
+                    string s = "ks_" + items + "_" + nrObjectives + "_1";
+                    ExecuteExperiments(@"C:\Users\Benjamin\Dropbox\FHNW\Master Thesis\Experiments\" + s);
+                }
             }
+            Console.Read();
+        }
+
+        static void MakeConstraints()
+        {
+            constraints = new List<Constraint>();
+            double[] profitSums = ProfitSums(knapsackmodel);
+            for (int i = 0; i < knapsackmodel.NumberOfProfits; i++)
+            {
+                //constraints.Add(new Constraint { Min = 0, Max = 0, ObjectiveIndex = i });
+            }
+            
+            //constraints.Add(new Constraint { Min = 0.33 * knapsackmodel.Items.Count, Max = null, ObjectiveIndex = 0 });
+            /*constraints.Add(new Constraint { Min = 0.33 * knapsackmodel.Items.Count, Max = null, ObjectiveIndex = 1 });
+            constraints.Add(new Constraint { Min = 0.33 * knapsackmodel.Items.Count, Max = null, ObjectiveIndex = 2 });
+            //constraints.Add(new Constraint { Min = null, Max = 0.3 * knapsackmodel.Items.Count, ObjectiveIndex = 1 });
             */
-            constraints.Add(new Constraint { Min = 2, Max = 6, ObjectiveIndex = 0 });
-            problem1.UserConstraints = constraints;
-            problem2.UserConstraints = constraints;
+        }
 
-            problem1.UserConstraintHandling = UserConstraintsMethod.DefaultConstraint;
-            problem2.UserConstraintHandling = UserConstraintsMethod.NotConsidered;
+        static private void ExecuteExperiments(string problemPath)
+        {
+            LoadProblem(problemPath);
+            MakeConstraints();
+            MakeExperiment(constraints, UserConstraintsMethod.NotConsidered).Execute(maxEvaluations);
 
-            var e1 = new Experiment(problem1);
-            var e2 = new Experiment(problem2);
+            //MakeExperiment(constraints, UserConstraintsMethod.DefaultConstraint).Execute(maxEvaluations);
+            //MakeExperiment(constraints, UserConstraintsMethod.SoftConstraint).Execute(maxEvaluations);
+        }
 
-            e1.Execute(20000);
-            e2.Execute(20000);
+        static private Experiment MakeExperiment( List<Constraint> constraints, UserConstraintsMethod method)
+        {
+            KnapsackProblem ksp = new KnapsackProblem(knapsackmodel);
+            ksp.UserConstraints = constraints;
+            ksp.UserConstraintHandling = method;
+            Experiment e = new Experiment(ksp, populationSize, experimentID);
+            e.Algorithm.EvaluationsBetweenEvents = evaluationsIntervall;
+            return e;
         }
 
         
@@ -47,20 +93,32 @@ namespace VerificationExperiments
         {
             IFormatter formatter = new BinaryFormatter();
             Stream stream = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.Read);
-            Knapsack.Models.Problem loadedModel = (Knapsack.Models.Problem) formatter.Deserialize(stream);
+            knapsackmodel = (Knapsack.Models.Problem) formatter.Deserialize(stream);
             stream.Close();
-            for (int i = 0; i < loadedModel.Capacities.Length; i++)
+            for (int i = 0; i < knapsackmodel.Capacities.Length; i++)
             {
                 double sum = 0;
-                foreach (var item in loadedModel.Items)
+                foreach (var item in knapsackmodel.Items)
                 {
                     sum += item.Characteristics[i];
                 }
-                loadedModel.Capacities[i] = sum / 2;
+                knapsackmodel.Capacities[i] = sum / 2;
             }
-            problem1 = new KnapsackProblem(loadedModel);
-            problem2 = new KnapsackProblem(loadedModel);
-            
+        }
+
+        static double[] ProfitSums(Knapsack.Models.Problem problem)
+        {
+            double[] sums = new double[problem.NumberOfProfits];
+
+            foreach (var item in problem.Items)
+            {
+                for (int i = 0; i < item.Profits.Length; i++)
+                {
+                    sums[i] += item.Profits[i];
+                }
+            }
+
+            return sums;
         }
     }
 }

@@ -28,21 +28,41 @@ namespace JMetalCSharp.Utils
 		/// <summary>
 		/// stores a <code>Comparator</code> for dominance checking
 		/// </summary>
-		private static readonly IComparer<Solution> dominance = new DominanceComparator();
+		private IComparer<Solution> dominance = new DominanceComparator();
 
 		/// <summary>
 		/// stores a <code>Comparator</code> for Overal Constraint Violation Comparator checking
 		/// </summary>
-		private static readonly IComparer<Solution> constraint = new OverallConstraintViolationComparator();
+		private IComparer<Solution> constraint = new OverallConstraintViolationComparator();
 
-		/// <summary>
-		/// Constructor.
-		/// </summary>
-		/// <param name="solutionSet">The <code>SolutionSet</code> to be ranked.</param>
-		public Ranking(SolutionSet solutionSet)
-		{
-			this.solutionSet = solutionSet;
 
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        /// <param name="solutionSet">The <code>SolutionSet</code> to be ranked.</param>
+        /// <param name="constraint">The constraint handling</param>
+        public Ranking(SolutionSet solutionSet, IConstraintViolationComparator constraint)
+        {
+            this.solutionSet = solutionSet;
+            this.constraint = constraint;
+            dominance = new DominanceComparator(constraint);
+
+            Execute();
+        }
+
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        /// <param name="solutionSet">The <code>SolutionSet</code> to be ranked.</param>
+        public Ranking(SolutionSet solutionSet)
+        {
+            this.solutionSet = solutionSet;
+
+            Execute();
+        }
+
+        private void Execute()
+        {
 			// dominateMe[i] contains the number of solutions dominating i        
 			int[] dominateMe = new int[this.solutionSet.Size()];
 

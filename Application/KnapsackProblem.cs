@@ -9,6 +9,7 @@ namespace MainApp
     {
         NotConsidered,
         DefaultConstraint,
+        SoftConstraint,
         ObjectiveFunction
     }
 
@@ -134,7 +135,8 @@ namespace MainApp
             }
             solution.NumberOfViolatedConstraints = numberOfViolatedConstraints;
             solution.OverallConstraintViolation = overallConstraintViolation;
-            if(UserConstraintHandling == UserConstraintsMethod.DefaultConstraint)
+
+            if ((UserConstraintHandling == UserConstraintsMethod.DefaultConstraint) || (UserConstraintHandling == UserConstraintsMethod.SoftConstraint))
             {
                 EvaluateUserConstraints(capacity, solution);
             }
@@ -169,8 +171,18 @@ namespace MainApp
                     }
                 }
             }
-            solution.NumberOfViolatedConstraints += numberOfViolatedUserConstraints;
-            solution.OverallConstraintViolation += overallUserConstraintViolation;
+
+            if (UserConstraintHandling == UserConstraintsMethod.DefaultConstraint)
+            {
+                solution.NumberOfViolatedConstraints += numberOfViolatedUserConstraints;
+                solution.OverallConstraintViolation += overallUserConstraintViolation;
+            }
+            else // (UserConstraintHandling == UserConstraintsMethod.SoftConstraint)
+            {
+                solution.NumberOfViolatedSoftConstraints = numberOfViolatedUserConstraints;
+                solution.OverallSoftConstraintViolation = overallUserConstraintViolation;
+            }
+            
         }
     }
 }

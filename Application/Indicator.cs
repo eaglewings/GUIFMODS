@@ -9,6 +9,9 @@ namespace MainApp
     {
         public double HypervolumeConstrained { get; set; }
         public int SolutionsWithinConstraints { get; set; }
+        public int DistinctSolutionsWithinConstraints { get; set; }
+        public SolutionSet DistinctSet { get; set; }
+        public long HyperVolumeElapsedMiliseconds { get; set; }
     }
 
     public class Indicator
@@ -78,6 +81,28 @@ namespace MainApp
             }
             return constrainedSolutions;
         }
+        
+        private static SolutionSet GetDistinctSolutions(SolutionSet set)
+        {
+            SolutionSet uniqueSolutions = new SolutionSet(set.Capacity);
+            for (int i = 0; i < set.Size(); i++)
+            {
+                Solution s = set.Get(i);
+                int count = 0;
+                for (int j = i + 1; j < set.Size(); j++)
+                {
+                    if (set.Get(j).Variable[0].ToString() == s.Variable[0].ToString())
+                    {
+                        count++;
+                    }
+                }
+                if(count == 0)
+                {
+                    uniqueSolutions.Add(s);
+                }
+            }
+            return uniqueSolutions;
+        }
 
         public static double HypervolumeConstrained(SolutionSet set, List<Constraint> constraints)
         {
@@ -94,10 +119,31 @@ namespace MainApp
         {
             Metric m = new Metric();
             List<double[]> constrainedSolutions = GetConstrainedSet(set, constraints);
+            int objectives = 0;
 
-            m.HypervolumeConstrained = (new HyperVolume()).CalculateHypervolume(constrainedSolutions.ToArray(), constrainedSolutions.ToArray().Length, set.Get(0).NumberOfObjectives);
+            if(constrainedSolutions.Count > 0)
+            {
+                objectives = constrainedSolutions[0].Length;
+            }
+
             m.SolutionsWithinConstraints = constrainedSolutions.Count;
 
+
+            SolutionSet distinctSet = GetDistinctSolutions(set);
+            constrainedSolutions = GetConstrainedSet(distinctSet, constraints);
+            if ((constrainedSolutions.Count > 500 && objectives >=5) || (constrainedSolutions.Count > 300 && objectives >= 7))
+            {
+                m.HypervolumeConstrained = 0;
+            }
+            else
+            {
+                var watch = System.Diagnostics.Stopwatch.StartNew();
+                m.HypervolumeConstrained = (new HyperVolume()).CalculateHypervolume(constrainedSolutions.ToArray(), constrainedSolutions.ToArray().Length, set.Get(0).NumberOfObjectives);
+                watch.Stop();
+                m.HyperVolumeElapsedMiliseconds = watch.ElapsedMilliseconds;
+            }
+            m.DistinctSolutionsWithinConstraints = constrainedSolutions.Count;
+            m.DistinctSet = distinctSet;
             return m;
         }
     }

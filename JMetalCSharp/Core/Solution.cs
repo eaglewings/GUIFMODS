@@ -82,21 +82,31 @@ namespace JMetalCSharp.Core
 		/// </summary>
 		public int Rank { get; set; }
 
-		/// <summary>
-		/// Stores the overall constraint violation of the solution
-		/// </summary>
-		public double OverallConstraintViolation { get; set; }
+        /// <summary>
+        /// Stores the overall constraint violation of the solution
+        /// </summary>
+        public double OverallConstraintViolation { get; set; }
 
-		/// <summary>
-		/// Stores the number of constraints violated by the solution
-		/// </summary>
-		public int NumberOfViolatedConstraints { get; set; }
+        /// <summary>
+        /// Stores the number of constraints violated by the solution
+        /// </summary>
+        public int NumberOfViolatedConstraints { get; set; }
 
-		/// <summary>
-		/// This field is intended to be used to know the location of
-		/// a solution into a <code>SolutionSet</code>. Used in MOCell
-		/// </summary>
-		public int Location { get; set; }
+        /// <summary>
+        /// Stores the overall constraint violation of the solution for soft constraints
+        /// </summary>
+        public double OverallSoftConstraintViolation { get; set; }
+
+        /// <summary>
+        /// Stores the number of soft constraints violated by the solution
+        /// </summary>
+        public int NumberOfViolatedSoftConstraints { get; set; }
+
+        /// <summary>
+        /// This field is intended to be used to know the location of
+        /// a solution into a <code>SolutionSet</code>. Used in MOCell
+        /// </summary>
+        public int Location { get; set; }
 
 		/// <summary>
 		/// Stores the distance to his k-nearest neighbor into a 
